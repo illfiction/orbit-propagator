@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 # import plotly.io as pio
 
 earth_radius = 6378.0 # km
-earth_mu = 3.9860043543609598E+06 # km^3 / s^2
+earth_mu = 3.9860043543609598E+05 # km^3 / s^2
 
 
 def two_body_ode(t, state):
@@ -39,19 +39,24 @@ class Satellite:
 
 # ---- Simulation ----
 initial_position = np.array([earth_radius + 450, 0, 0])
-initial_velocity = np.array([0, ( earth_mu / earth_radius + 450 ) ** 0.5, 0])
+initial_velocity = np.array([0, ( earth_mu / initial_position[0] + 40) ** 0.5, 0])
 satellite = Satellite(initial_position, initial_velocity)
 time_span = 50000
 dt = 0.1
 steps = int(time_span / dt)
 state_list = []
+energy_list = []
 
 
 for t in range(steps):
     satellite.update(t, dt)
     state_list.append(satellite.position.copy())
+    v = np.linalg.norm(satellite.velocity)
+    r = np.linalg.norm(satellite.position)
+    energy = 0.5 * v ** 2 - earth_mu / r
+    energy_list.append(energy)
+    print(t,energy)
 
-# print(state_list)
 states = np.array(state_list)
 # Satellite orbit line
 orbit_trace = go.Scatter3d(
