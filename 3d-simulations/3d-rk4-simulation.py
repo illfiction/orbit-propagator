@@ -16,7 +16,7 @@ def two_body_ode(t, state):
 def rk4_step(f, t, y,dt):
     k1 = f(t, y)
     k2 = f(t + 0.5 * dt, y + 0.5 * k1 * dt)
-    k3 = f(t + 0.5 * dt, y + k2 * dt)
+    k3 = f(t + 0.5 * dt, y + 0.5 * k2 * dt)
     k4 = f(t + dt, y + k3 * dt)
 
     return y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
@@ -97,3 +97,5 @@ fig.update_layout(
 # pio.renderers.default = 'browser'
 
 fig.show()
+
+# 9.188666918285625
