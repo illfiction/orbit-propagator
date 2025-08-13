@@ -1,19 +1,22 @@
 import numpy as np
 import plotly.graph_objects as go
+from quaternions import Quaternion
+from maths import *
 # import plotly.io as pio
 
 earth_radius = 6378.0 # km
 earth_mu = 3.9860043543609598E+05 # km^3 / s^2
 
 
-def two_body_ode(t, state):
+def position_ode(t, state):
     r = state[:3]
 
     a = -earth_mu * r / np.linalg.norm(r) ** 3
 
-    return np.concatenate((state[3:], a))
+    return np.concatenate((state[3:6], a))
 
-def rk4_step(f, t, y,dt):
+
+def position_rk4_step(f, t, y, dt):
     k1 = f(t, y)
     k2 = f(t + 0.5 * dt, y + 0.5 * k1 * dt)
     k3 = f(t + 0.5 * dt, y + 0.5 * k2 * dt)
@@ -21,12 +24,44 @@ def rk4_step(f, t, y,dt):
 
     return y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
+def attitude_ode(t, state):
+    q = state[:4]
+    w = state[4:]
+
+    q_dot = 0.5 * Omega(w).dot(q)
+    print(q_dot)
+
+    # TODO: Torque is taken as zero so add a way to calculate torque
+    # TODO: add J_inverse also
+
+    Torque = np.array([0.001, 0, 0])
+
+    J = np.diag([1.0, 1.2, 0.8])
+    J_inverse = np.linalg.inv(J)
+
+
+    w_dot = J_inverse.dot(Torque - np.cross(w,np.dot(J,w)))
+
+    return np.concatenate([q_dot, w_dot])
+
+
+
+def attitude_rk4_step(f, t, y, dt):
+    k1 = f(t, y)
+    k2 = f(t + 0.5 * dt, y + 0.5 * k1 * dt)
+    k3 = f(t + 0.5 * dt, y + 0.5 * k2 * dt)
+    k4 = f(t + dt, y + k3 * dt)
+
+    return y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 class Satellite:
-    def __init__(self, position, velocity):
-        self.state = np.concatenate((position, velocity))
+    def __init__(self, position, velocity, quaternion, angular_velocity):
+        self.state = np.concatenate((position, velocity, quaternion, angular_velocity))
 
     def update(self, t, dt):
-        self.state = rk4_step(two_body_ode, t, self.state,dt)
+        self.state[:6] = position_rk4_step(position_ode, t, self.state[:6],dt)
+        self.state[6:] = attitude_rk4_step(attitude_ode, t, self.state[6:],dt)
 
     @property
     def position(self):
@@ -34,28 +69,40 @@ class Satellite:
 
     @property
     def velocity(self):
-        return self.state[3:]
+        return self.state[3:6]
+
+    @property
+    def quaternion(self):
+        return self.state[6:10]
+
+    @property
+    def angular_velocity(self):
+        return self.state[10:13]
 
 
 # ---- Simulation ----
 initial_position = np.array([earth_radius + 450, 0, 0])
 initial_velocity = np.array([0, ( earth_mu / initial_position[0] + 40) ** 0.5, 0])
-satellite = Satellite(initial_position, initial_velocity)
+initial_quaternion = np.array([1, 0, 0, 0])
+initial_angular_velocity = np.array([1, 0, 0])
+satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
 time_span = 50000
 dt = 0.1
 steps = int(time_span / dt)
 state_list = []
+quaternion_list = []
 energy_list = []
 
 
 for t in range(steps):
     satellite.update(t, dt)
     state_list.append(satellite.position.copy())
+    quaternion_list.append(satellite.quaternion.copy())
     v = np.linalg.norm(satellite.velocity)
     r = np.linalg.norm(satellite.position)
     energy = 0.5 * v ** 2 - earth_mu / r
     energy_list.append(energy)
-    print(t,energy)
+    # print(t,energy)
 
 states = np.array(state_list)
 # Satellite orbit line
