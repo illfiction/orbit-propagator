@@ -2,10 +2,12 @@ import numpy as np
 import plotly.graph_objects as go
 from quaternions import Quaternion
 from maths import *
-# import plotly.io as pio
+import plotly.io as pio
 
 earth_radius = 6378.0 # km
 earth_mu = 3.9860043543609598E+05 # km^3 / s^2
+J = np.diag([1.0, 1.2, 1.0])
+J_inverse = np.linalg.inv(J)
 
 
 def position_ode(t, state):
@@ -29,15 +31,12 @@ def attitude_ode(t, state):
     w = state[4:]
 
     q_dot = 0.5 * Omega(w).dot(q)
-    print(q_dot)
+    # print(q_dot)
 
     # TODO: Torque is taken as zero so add a way to calculate torque
     # TODO: add J_inverse also
 
-    Torque = np.array([0.001, 0, 0])
-
-    J = np.diag([1.0, 1.2, 0.8])
-    J_inverse = np.linalg.inv(J)
+    Torque = np.array([0, 0, 0])
 
 
     w_dot = J_inverse.dot(Torque - np.cross(w,np.dot(J,w)))
@@ -52,7 +51,9 @@ def attitude_rk4_step(f, t, y, dt):
     k3 = f(t + 0.5 * dt, y + 0.5 * k2 * dt)
     k4 = f(t + dt, y + k3 * dt)
 
-    return y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
+    y_next = y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
+    y_next[:4] /= np.linalg.norm(y_next[:4])  # Normalize quaternion
+    return y_next
 
 
 class Satellite:
@@ -84,7 +85,7 @@ class Satellite:
 initial_position = np.array([earth_radius + 450, 0, 0])
 initial_velocity = np.array([0, ( earth_mu / initial_position[0] + 40) ** 0.5, 0])
 initial_quaternion = np.array([1, 0, 0, 0])
-initial_angular_velocity = np.array([1, 0, 0])
+initial_angular_velocity = np.array([0, 0, 0.03])
 satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
 time_span = 50000
 dt = 0.1
@@ -140,8 +141,37 @@ fig.update_layout(
     ),
     title='Interactive Orbit Visualization'
 )
+# Scale for body axes
+L = 500  # adjust based on orbit size
+colors = ['red', 'green', 'blue']
 
-# pio.renderers.default = 'browser'
+# Add attitude representation for a few sample points (to avoid clutter)
+step_interval = 2000  # every 1000 steps
+for i in range(0, len(states), step_interval):
+    pos = states[i]
+    q = quaternion_list[i]
+    q0, q1, q2, q3 = q
+
+    # Rotation matrix from quaternion
+    R = np.array([
+        [1 - 2 * (q2 ** 2 + q3 ** 2), 2 * (q1 * q2 - q0 * q3), 2 * (q1 * q3 + q0 * q2)],
+        [2 * (q1 * q2 + q0 * q3), 1 - 2 * (q1 ** 2 + q3 ** 2), 2 * (q2 * q3 - q0 * q1)],
+        [2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1), 1 - 2 * (q1 ** 2 + q2 ** 2)]
+    ])
+
+    # Body axes
+    for j in range(3):
+        axis_end = pos + L * R[:, j]
+        fig.add_trace(go.Scatter3d(
+            x=[pos[0], axis_end[0]],
+            y=[pos[1], axis_end[1]],
+            z=[pos[2], axis_end[2]],
+            mode='lines',
+            line=dict(color=colors[j], width=5),
+            showlegend=False
+        ))
+
+pio.renderers.default = 'browser'
 
 fig.show()
 
