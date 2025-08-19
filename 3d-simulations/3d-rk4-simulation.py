@@ -4,6 +4,7 @@ from quaternions import Quaternion
 from maths import *
 import plotly.io as pio
 
+J2 = 1.08262668e-3
 earth_radius = 6378.0 # km
 earth_mu = 3.9860043543609598E+05 # km^3 / s^2
 J = np.diag([1.0, 1.2, 1.0])
@@ -13,9 +14,30 @@ J_inverse = np.linalg.inv(J)
 def position_ode(t, state):
     r = state[:3]
 
-    a = -earth_mu * r / np.linalg.norm(r) ** 3
+    a_kepler = -earth_mu * r / np.linalg.norm(r) ** 3
+
+    a_j2 = j2_accel(r)
+
+    a = a_kepler + a_j2
 
     return np.concatenate((state[3:6], a))
+
+def j2_accel(r_vec):
+    x, y, z = r_vec
+    r2 = x*x + y*y + z*z
+    r  = np.sqrt(r2)
+    if r == 0:
+        return np.zeros(3)
+
+    z2 = z*z
+    r5 = r2 * r2 * r
+    k  = 1.5 * J2 * earth_mu * (earth_radius**2) / r5
+    f  = 5.0 * z2 / r2  # = 5 (z/r)^2
+
+    ax = k * x * (f - 1.0)
+    ay = k * y * (f - 1.0)
+    az = k * z * (f - 3.0)
+    return np.array([ax, ay, az])
 
 
 def position_rk4_step(f, t, y, dt):
@@ -83,12 +105,12 @@ class Satellite:
 
 # ---- Simulation ----
 initial_position = np.array([earth_radius + 450, 0, 0])
-initial_velocity = np.array([0, ( earth_mu / initial_position[0] + 40) ** 0.5, 0])
+initial_velocity = np.array([0, ( earth_mu / initial_position[0]) ** 0.5, 3])
 initial_quaternion = np.array([1, 0, 0, 0])
 initial_angular_velocity = np.array([0, 0, 0.03])
 satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
-time_span = 50000
-dt = 0.1
+time_span = 500000
+dt = 1
 steps = int(time_span / dt)
 state_list = []
 quaternion_list = []
@@ -112,7 +134,7 @@ orbit_trace = go.Scatter3d(
     y=states[:, 1],
     z=states[:, 2],
     mode='lines',
-    line=dict(width=2, color='red'),
+    line=dict(width=2, color='yellow'),
     name='Orbit'
 )
 
