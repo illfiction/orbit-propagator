@@ -1,6 +1,5 @@
 import numpy as np
 from constants import EARTH_RADIUS, C_SRP, SOLAR_PRESSURE, SATELLITE_DIMENSIONS
-from satellite import Satellite
 import sys, os
 
 # go up one directory and into math_helpers
@@ -9,12 +8,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "m
 from maths import *
 
 
-def solar_pressure_torque(sat):
-    sun_vector = [1, 0, 0]  ##TODO: add sun vector calculation
+def solar_radiation_torque(quaternion):
+    sun_vector = [0, 0, 1]  ##TODO: add sun vector calculation
 
     # TODO: need to check if satellite is eclipsed or not
 
-    attitude_matrix = maths.attitude_matrix_from_quaternion(sat.quaternion)
+    attitude_matrix = attitude_matrix_from_quaternion(quaternion)
 
     basis_vectors = []
 
@@ -45,11 +44,13 @@ def solar_pressure_torque(sat):
         if cos_theta > 0:
             F_solar_list.append(-C_SRP * SOLAR_PRESSURE * cos_theta * area_vectors[i])
         else:
-            F_solar_list.append(0)
+            F_solar_list.append(np.zeros(3))
 
     Torque = np.zeros(3)
 
     for i in range(6):
-        Torque += r[i] * F_solar_list[i]
+        Torque += np.cross(r[i], F_solar_list[i])
 
+
+    print("Torque = ", Torque)
     return Torque
