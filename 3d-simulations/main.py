@@ -11,7 +11,7 @@ def run_simulation():
 
     satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
 
-    time_span = 90 * 24 * 60 * 60  # 90 days
+    time_span = 1 * 24 * 60 * 60  # 90 days
     dt = 10
     steps = int(time_span / dt)
 
