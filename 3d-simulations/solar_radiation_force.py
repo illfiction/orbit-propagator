@@ -1,5 +1,5 @@
 import numpy as np
-from constants import EARTH_RADIUS, C_SRP, SOLAR_PRESSURE, SATELLITE_DIMENSIONS
+from constants import C_SRP, SOLAR_PRESSURE, SATELLITE_DIMENSIONS
 import sys, os
 
 # go up one directory and into math_helpers
@@ -38,13 +38,15 @@ def solar_radiation_force(quaternion):
 
     F_solar = np.zeros(3)   #Net force being added up
 
-    for i in range(6):
-        for i in range(6):
-            cos_theta = np.dot(area_vectors[i], sun_vector) / np.linalg.norm(area_vectors[i])
 
-            if cos_theta > 0:
-                F_solar += -C_SRP * SOLAR_PRESSURE * cos_theta * area_vectors[i]
-            else:
-                F_solar += 0
+    for i in range(6):
+        cos_theta = np.dot(area_vectors[i], sun_vector) / np.linalg.norm(area_vectors[i])
+
+        if cos_theta > 0:
+            F_solar += -C_SRP * SOLAR_PRESSURE * cos_theta * area_vectors[i]
+        else:
+            F_solar += 0
+
+    # print(F_solar)
 
     return F_solar

@@ -11,7 +11,7 @@ def run_simulation():
 
     satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
 
-    time_span = 1 * 24 * 60 * 3.95  # 90 days
+    time_span = 1 * 24 * 60 * 3.95  # For 1 SSO orbit
     dt = 1
     steps = int(time_span / dt)
 
@@ -25,7 +25,7 @@ def run_simulation():
         quaternion_list.append(satellite.quaternion.copy())
         v = np.linalg.norm(satellite.velocity)
         r = np.linalg.norm(satellite.position)
-        print("angular velocity = ", satellite.angular_velocity)
+        # print("angular velocity = ", satellite.angular_velocity)
         # energy = 0.5 * v ** 2 - EARTH_MU / r + 0.5 * np.trace(J)
         # energy_list.append(energy)
 

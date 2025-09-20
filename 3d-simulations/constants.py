@@ -8,5 +8,5 @@ J_INV = np.linalg.inv(J)
 SATELLITE_DIMENSIONS = np.array([0.1, 0.1, 0.1]) # m (assuming 1U cubesat)
 C_SRP = 1.8
 SOLAR_FLUX = 1367 # W/m²
-SOLAR_PRESSURE = 4.56e-1# N/m²
+SOLAR_PRESSURE = 4.56e-6# N/m²
 

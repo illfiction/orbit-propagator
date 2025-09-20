@@ -52,5 +52,5 @@ def solar_radiation_torque(quaternion):
         Torque += np.cross(r[i], F_solar_list[i])
 
 
-    print("Torque = ", Torque)
+    # print("Torque = ", Torque)
     return Torque
