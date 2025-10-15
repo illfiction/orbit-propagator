@@ -85,6 +85,9 @@ def time_over_ground_station(position_list, dt):
     days = sorted(pass_durations.keys())
     durations = [pass_durations[d] for d in days]
 
+    avg_downlink_time = np.mean(list(pass_durations.values()))
+    print(f"Average downlink time per day: {avg_downlink_time:.2f} seconds")
+
     # plot
     plt.figure(figsize=(8, 4))
     plt.bar(days, durations, width=0.8)
