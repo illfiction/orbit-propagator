@@ -1,11 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-# ----------------------------
-# Constants
-# ----------------------------
-OMEGA_EARTH = 7.2921159e-5  # rad/s
-R_EARTH = 6378.137  # km (equatorial radius)
+from constants import *
 
 # ----------------------------
 # Rotation about z-axis
@@ -47,11 +42,11 @@ def elevation_angle(r_sat, r_gs, up_eci):
 # ----------------------------
 # Main function: compute downlink time per day
 # ----------------------------
-def time_over_ground_station(position_list, dt):
-    # Ground station (example: BITS Pilani, India)
-    lat = np.radians(28.3591)
-    lon0 = np.radians(75.5882)
-    h = 0.0
+def time_over_ground_station(position_list, dt, gs_lat_deg, gs_lon_deg, gs_alt_km):
+    # Convert degrees to radians for calculations
+    lat = np.radians(gs_lat_deg)
+    lon0 = np.radians(gs_lon_deg)
+    h = gs_alt_km # Use altitude from config
 
     in_pass = False
     pass_start = None

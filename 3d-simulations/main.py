@@ -15,6 +15,8 @@ def run_simulation(config_path='config.json'):
     init_conds = config['initial_conditions']
     sat_stats = config['satellite_stats']
     analysis_params = config['analysis']
+    # Load the new ground station section
+    ground_station_params = config.get('ground_station')
 
     # --- Set Initial Conditions from Config ---
     initial_position = np.array(init_conds['position_km'])
@@ -37,8 +39,8 @@ def run_simulation(config_path='config.json'):
         satellite.update(t, dt)
         state_list.append(satellite.position.copy())
         quaternion_list.append(satellite.quaternion.copy())
-        v = np.linalg.norm(satellite.velocity)
-        r = np.linalg.norm(satellite.position)
+        # v = np.linalg.norm(satellite.velocity)
+        # r = np.linalg.norm(satellite.position)
         # print("angular velocity = ", satellite.angular_velocity)
         # energy = 0.5 * v ** 2 - EARTH_MU / r + 0.5 * np.trace(J)
         # energy_list.append(energy)
@@ -46,8 +48,17 @@ def run_simulation(config_path='config.json'):
     states = np.array(state_list)
 
     if analysis_params['run_ground_station_analysis']:
-        time_over_ground_station(states, dt)
-
+        if ground_station_params:
+            print(f"Running ground station analysis for: {ground_station_params['name']}")
+            time_over_ground_station(
+                position_list=states,
+                dt=dt,
+                gs_lat_deg=ground_station_params['latitude_deg'],
+                gs_lon_deg=ground_station_params['longitude_deg'],
+                gs_alt_km=ground_station_params['altitude_km']
+            )
+        else:
+            print("Warning: Ground station analysis is enabled, but no ground station data found in config.json.")
 
     plot_orbit(states, quaternion_list)
 

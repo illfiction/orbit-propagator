@@ -20,5 +20,11 @@
   },
   "analysis": {
     "run_ground_station_analysis": true
+  },
+  "ground_station": {
+    "name": "BITS Pilani, India",
+    "latitude_deg": 28.3591,
+    "longitude_deg": 75.5882,
+    "altitude_km": 0.21
   }
 }
