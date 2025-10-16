@@ -1,22 +1,32 @@
 import numpy as np
+import json
+import os # Import the 'os' module
 from satellite import Satellite
 from visualize import plot_orbit
 from time_over_ground_station import time_over_ground_station
-from constants import EARTH_MU, J ,EARTH_RADIUS
+from constants import EARTH_MU ,EARTH_RADIUS
 
-def run_simulation():
-    # initial_position = np.array([-4579.5, -4097.12, 3296.86])
-    # initial_velocity = np.array([-1.866, -3.234, -6.571])
+def run_simulation(config_path='config.json'):
+    # --- Load Configuration from JSON file ---
+    with open(config_path, 'r') as f:
+        config = json.load(f)
 
-    initial_position = np.array([6828.1, 0, 0])
-    initial_velocity = np.array([0, 6.629, 3.824])
-    initial_quaternion = np.array([0.58,0.58,0,0.5720139858])
-    initial_angular_velocity = np.array([0, 0, 0.0])
+    sim_params = config['simulation']
+    init_conds = config['initial_conditions']
+    sat_stats = config['satellite_stats']
+    analysis_params = config['analysis']
 
-    satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity)
+    # --- Set Initial Conditions from Config ---
+    initial_position = np.array(init_conds['position_km'])
+    initial_velocity = np.array(init_conds['velocity_km_s'])
+    initial_quaternion = np.array(init_conds['quaternion'])
+    initial_angular_velocity = np.array(init_conds['angular_velocity_rad_s'])
 
-    time_span = 90 * 24 * 60 * 60
-    dt = 100
+    satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity,sat_stats)
+
+    # --- Set Simulation Time Parameters from Config ---
+    time_span = sim_params['time_span_days'] * 24 * 60 * 60
+    dt = sim_params['dt_seconds']
     steps = int(time_span / dt)
 
     state_list = []
@@ -35,10 +45,19 @@ def run_simulation():
 
     states = np.array(state_list)
 
-    time_over_ground_station(states, dt)
+    if analysis_params['run_ground_station_analysis']:
+        time_over_ground_station(states, dt)
+
+
     plot_orbit(states, quaternion_list)
 
 
 
 if __name__ == '__main__':
-    run_simulation()
+    # --- Build a robust path to the config file ---
+    # Get the absolute path to the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Join that directory path with the config file name
+    config_file_path = os.path.join(script_dir, 'config.json')
+
+    run_simulation(config_file_path)

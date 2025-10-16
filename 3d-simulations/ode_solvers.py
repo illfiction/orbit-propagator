@@ -2,7 +2,7 @@ import numpy as np
 from j2_acceleration import j2_accel
 from solar_radiation_force import solar_radiation_force
 from solar_radiation_torque import solar_radiation_torque
-from constants import EARTH_MU, J, J_INV
+from constants import EARTH_MU
 import sys, os
 
 # go up one directory and into math_helpers
@@ -11,21 +11,21 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "m
 from maths import Omega # now maths.py is available
 
 
-def position_ode(t, state ,quaternion):
+def position_ode(t, state ,sat):
     r = state[:3]
     a_kepler = -EARTH_MU * r / np.linalg.norm(r) ** 3
     a_j2 = j2_accel(r)
-    a_solar_radiation = solar_radiation_force(quaternion)
+    a_solar_radiation = solar_radiation_force(sat)
 
     a = a_kepler + a_j2 + a_solar_radiation
     return np.concatenate((state[3:6], a))
 
-def attitude_ode(t, state, position):
+def attitude_ode(t, state, sat):
     q = state[:4]
     w = state[4:]
     q_dot = 0.5 * Omega(w).dot(q)
-    Torque = solar_radiation_torque(q)
-    w_dot = J_INV.dot(Torque - np.cross(w, np.dot(J, w)))
+    Torque = np.zeros(3)
+    w_dot = sat.J_inv.dot(Torque - np.cross(w, np.dot(sat.J, w)))
     return np.concatenate([q_dot, w_dot])
 
 def rk4_step(f, t, y, dt):
@@ -36,11 +36,11 @@ def rk4_step(f, t, y, dt):
     return y + dt * (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
 def position_rk4_step(t, sat, dt):
-    f = lambda t_, y_: position_ode(t_, y_, sat.rotational[:4])
+    f = lambda t_, y_: position_ode(t_, y_, sat)
     return rk4_step(f, t, sat.translational, dt)
 
 def attitude_rk4_step(t, sat, dt):
-    f = lambda t_, y_: attitude_ode(t_, y_, sat.translational[:3])
+    f = lambda t_, y_: attitude_ode(t_, y_, sat)
     y_next = rk4_step(f, t, sat.rotational, dt)
     y_next[:4] /= np.linalg.norm(y_next[:4])
     return y_next

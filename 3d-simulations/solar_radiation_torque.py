@@ -1,5 +1,5 @@
 import numpy as np
-from constants import EARTH_RADIUS, C_SRP, SOLAR_PRESSURE, SATELLITE_DIMENSIONS
+from constants import EARTH_RADIUS, SOLAR_PRESSURE
 import sys, os
 
 # go up one directory and into math_helpers

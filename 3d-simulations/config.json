@@ -1,0 +1,24 @@
+{
+  "simulation": {
+    "time_span_days": 5,
+    "dt_seconds": 10
+  },
+  "initial_conditions": {
+    "position_km": [6828.1, 0, 0],
+    "velocity_km_s": [0, 6.629, 3.824],
+    "quaternion": [0.58, 0.58, 0, 0.5720139858],
+    "angular_velocity_rad_s": [0, 0, 0.0]
+  },
+  "satellite_stats": {
+    "inertia_tensor": [
+      [0.005, 0, 0],
+      [0, 0.025, 0],
+      [0, 0, 0.025]
+    ],
+    "dimensions_m": [0.1, 0.1, 0.1],
+    "srp_coefficient": 1.8
+  },
+  "analysis": {
+    "run_ground_station_analysis": true
+  }
+}
