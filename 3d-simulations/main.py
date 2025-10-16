@@ -13,7 +13,7 @@ def run_simulation(config_path='config.json'):
 
     sim_params = config['simulation']
     init_conds = config['initial_conditions']
-    sat_stats = config['satellite_stats']
+    sat_properties = config['satellite_properties']
     analysis_params = config['analysis']
     # Load the new ground station section
     ground_station_params = config.get('ground_station')
@@ -24,7 +24,7 @@ def run_simulation(config_path='config.json'):
     initial_quaternion = np.array(init_conds['quaternion'])
     initial_angular_velocity = np.array(init_conds['angular_velocity_rad_s'])
 
-    satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity,sat_stats)
+    satellite = Satellite(initial_position, initial_velocity, initial_quaternion, initial_angular_velocity,sat_properties)
 
     # --- Set Simulation Time Parameters from Config ---
     time_span = sim_params['time_span_days'] * 24 * 60 * 60
@@ -55,7 +55,8 @@ def run_simulation(config_path='config.json'):
                 dt=dt,
                 gs_lat_deg=ground_station_params['latitude_deg'],
                 gs_lon_deg=ground_station_params['longitude_deg'],
-                gs_alt_km=ground_station_params['altitude_km']
+                gs_alt_km=ground_station_params['altitude_km'],
+                min_elevation=ground_station_params['min_elevation_deg']
             )
         else:
             print("Warning: Ground station analysis is enabled, but no ground station data found in config.json.")

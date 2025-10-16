@@ -42,7 +42,7 @@ def elevation_angle(r_sat, r_gs, up_eci):
 # ----------------------------
 # Main function: compute downlink time per day
 # ----------------------------
-def time_over_ground_station(position_list, dt, gs_lat_deg, gs_lon_deg, gs_alt_km):
+def time_over_ground_station(position_list, dt, gs_lat_deg, gs_lon_deg, gs_alt_km,min_elevation):
     # Convert degrees to radians for calculations
     lat = np.radians(gs_lat_deg)
     lon0 = np.radians(gs_lon_deg)
@@ -65,11 +65,11 @@ def time_over_ground_station(position_list, dt, gs_lat_deg, gs_lon_deg, gs_alt_k
 
         elev = elevation_angle(r_sat, r_gs_eci, up_eci)
 
-        if elev >= 60 and not in_pass:
+        if elev >= min_elevation and not in_pass:
             # start of a new pass
             in_pass = True
             pass_start = t
-        elif elev < 60 and in_pass:
+        elif elev < min_elevation and in_pass:
             # end of pass
             in_pass = False
             duration = t - pass_start
@@ -88,7 +88,7 @@ def time_over_ground_station(position_list, dt, gs_lat_deg, gs_lon_deg, gs_alt_k
     plt.bar(days, durations, width=0.8)
     plt.xlabel("Day")
     plt.ylabel("Downlink time (s)")
-    plt.title("Daily Downlink Time (Elevation ≥ 60°)")
+    plt.title(f"Daily Downlink Time (Elevation ≥ {min_elevation}°)")
     plt.show()
 
     return pass_durations
