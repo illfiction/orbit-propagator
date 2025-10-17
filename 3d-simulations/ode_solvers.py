@@ -7,8 +7,7 @@ import sys, os
 
 # go up one directory and into math_helpers
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-
-from maths import Omega # now maths.py is available
+from maths import Omega
 
 
 def position_ode(t, state ,sat):

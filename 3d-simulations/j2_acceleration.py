@@ -13,6 +13,8 @@ def j2_accel(r_vec):
     k = 1.5 * J2 * EARTH_MU * (EARTH_RADIUS ** 2) / r5
     f = 5.0 * z2 / r2
 
+    # implementing j2 formula
+
     ax = k * x * (f - 1.0)
     ay = k * y * (f - 1.0)
     az = k * z * (f - 3.0)

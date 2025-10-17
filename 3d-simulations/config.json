@@ -1,7 +1,7 @@
 {
   "simulation": {
-    "time_span_days": 5,
-    "dt_seconds": 1
+    "time_span_days": 9,
+    "dt_seconds": 100
   },
   "initial_conditions": {
     "position_km": [6828.1, 0, 0],
@@ -23,9 +23,9 @@
     "latitude_deg": 28.3591,
     "longitude_deg": 75.5882,
     "altitude_km": 0.21,
-    "min_elevation_deg": 60
+    "min_elevation_deg": 0
   },
-"analysis": {
+  "analysis": {
     "run_ground_station_analysis": true,
     "pointing_axis_body_frame": [0.0, 0.0, 1.0],
     "pointing_angle_threshold_deg": 45.0
