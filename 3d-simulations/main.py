@@ -3,8 +3,8 @@ import json
 import os # Import the 'os' module
 from satellite import Satellite
 from visualize import plot_orbit
-from time_over_ground_station import time_over_ground_station
-from constants import EARTH_MU ,EARTH_RADIUS
+from link_budget import time_over_ground_station
+from groundstation import GroundStation
 
 def run_simulation(config_path='config.json'):
     # --- Load Configuration from JSON file ---
@@ -31,13 +31,20 @@ def run_simulation(config_path='config.json'):
     dt = sim_params['dt_seconds']
     steps = int(time_span / dt)
 
-    state_list = []
+    print(f"Running simulation for {sim_params['time_span_days']} days with a timestep of {dt}s...")
+
+    position_list = []
     quaternion_list = []
     # energy_list = []
 
     for t in range(steps):
+
+        if t % (steps // 10) == 0:
+            print(f"  Simulation is {int(t / steps * 100)}% complete...")
+
+
         satellite.update(t, dt)
-        state_list.append(satellite.position.copy())
+        position_list.append(satellite.position.copy())
         quaternion_list.append(satellite.quaternion.copy())
         # v = np.linalg.norm(satellite.velocity)
         # r = np.linalg.norm(satellite.position)
@@ -45,22 +52,26 @@ def run_simulation(config_path='config.json'):
         # energy = 0.5 * v ** 2 - EARTH_MU / r + 0.5 * np.trace(J)
         # energy_list.append(energy)
 
-    states = np.array(state_list)
+    print("  Simulation 100% complete.")
+
+    states = np.array(position_list)
 
     if analysis_params['run_ground_station_analysis']:
         if ground_station_params:
-            print(f"Running ground station analysis for: {ground_station_params['name']}")
+            ground_station = GroundStation(ground_station_params['name'],ground_station_params['latitude_deg'],ground_station_params['longitude_deg'],ground_station_params['altitude_km'],ground_station_params['min_elevation_deg'])
+            print(f"Running ground station analysis for: {ground_station.name}")
             time_over_ground_station(
                 position_list=states,
+                quaternion_list=np.array(quaternion_list),
                 dt=dt,
-                gs_lat_deg=ground_station_params['latitude_deg'],
-                gs_lon_deg=ground_station_params['longitude_deg'],
-                gs_alt_km=ground_station_params['altitude_km'],
-                min_elevation=ground_station_params['min_elevation_deg']
+                ground_station=ground_station,
+                analysis_params=analysis_params
             )
         else:
             print("Warning: Ground station analysis is enabled, but no ground station data found in config.json.")
 
+
+    print("\nGenerating 3D orbit visualization...")
     plot_orbit(states, quaternion_list)
 
 

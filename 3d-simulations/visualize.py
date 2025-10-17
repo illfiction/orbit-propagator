@@ -38,7 +38,7 @@ def plot_orbit(states, quaternion_list):
 
     L = 500
     colors = ['red', 'green', 'blue']
-    step_interval = 50
+    step_interval = states.size // 1000
 
     for i in range(0, len(states), step_interval):
         pos = states[i]
