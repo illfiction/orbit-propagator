@@ -18,16 +18,16 @@
     "dimensions_m": [0.1, 0.1, 0.1],
     "srp_coefficient": 1.8
   },
-"analysis": {
-    "run_ground_station_analysis": true,
-    "pointing_axis_body_frame": [0.0, 0.0, 1.0],
-    "pointing_angle_threshold_deg": 45.0
-  },
   "ground_station": {
     "name": "BITS Pilani, India",
     "latitude_deg": 28.3591,
     "longitude_deg": 75.5882,
     "altitude_km": 0.21,
     "min_elevation_deg": 60
+  },
+"analysis": {
+    "run_ground_station_analysis": true,
+    "pointing_axis_body_frame": [0.0, 0.0, 1.0],
+    "pointing_angle_threshold_deg": 45.0
   }
 }
