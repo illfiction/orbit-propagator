@@ -54,31 +54,51 @@ def angle_between_vectors(v1, v2):
     v2_u = v2 / np.linalg.norm(v2)
     return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
 
+def position_of_gs_eci(ground_station, t):
+
+    longitude = ground_station.lon_rad_initial + OMEGA_EARTH * t
+    r_gs_ecef = geodetic_to_ecef()
+
 
 
 def time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
 
+    # What is Analysis Params?
+    # This is a dictionary containing various parameters for the analysis.
+    # Where is this dictionary defined?
+    # The dictionary is defined in the main simulation script, where the simulation parameters are set up.
+
+
+    # this is the vector along which the sattelite's antennas point!
     pointing_axis_body = np.array(analysis_params['pointing_axis_body_frame'])
+
+    # i don't understand what this is right now!
     pointing_threshold_deg = analysis_params['pointing_angle_threshold_deg']
 
     in_pass = False
     pass_start = None
     pass_durations = {}
 
+    # elevation threshold for the satellite's data transmission for the ground station!
     elevation_threshold_deg = ground_station.min_elevation_deg
 
     pointing_angles = []
     pointing_times = []
     total_on_target_time = 0
 
+
     for i, r_sat_eci in enumerate(position_list):
+        
+        # current time in seconds
         t = i * dt
+
+        # compute ground station position in ECI at time t!
 
         current_lon = ground_station.lon_rad_initial + OMEGA_EARTH * t
         r_gs_ecef = geodetic_to_ecef(ground_station.lat_rad, ground_station.lon_rad_initial, ground_station.alt_km)
         up_ecef = geodetic_up(ground_station.lat_rad, ground_station.lon_rad_initial)
 
-        R_ecef_to_eci = rot_z(OMEGA_EARTH * t)
+        R_ecef_to_eci = rot_z( -1 * OMEGA_EARTH * t)
         r_gs_eci = R_ecef_to_eci @ r_gs_ecef
         up_eci = R_ecef_to_eci @ up_ecef
 
