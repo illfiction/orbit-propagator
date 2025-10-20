@@ -1,11 +1,19 @@
 {
   "simulation": {
-    "time_span_days": 9,
-    "dt_seconds": 100
+    "time_span_days": 1,
+    "dt_seconds": 1
   },
   "initial_conditions": {
+    "method": "orbital_elements",
+
+    "orbital_elements": "these",
+    "altitude_km": 450.0,
+    "inclination_deg": 60,
+
+    "state_vectors": "these",
     "position_km": [6828.1, 0, 0],
-    "velocity_km_s": [0, 6.629, 3.824],
+    "velocity_km_s": [0, 3.824, 6.629],
+
     "quaternion": [0.58, 0.58, 0, 0.5720139858],
     "angular_velocity_rad_s": [0.3, 1.5, 1]
   },

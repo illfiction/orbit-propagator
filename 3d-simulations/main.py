@@ -1,6 +1,8 @@
 import numpy as np
+from tqdm import tqdm
 import json
 import os
+from intial_conditions_conversions import orbital_elements_to_state_vectors
 from satellite import Satellite
 from visualize import plot_orbit
 from link_budget import time_over_ground_station
@@ -24,9 +26,23 @@ def run_simulation(config_path='config.json'):
     analysis_params = config['analysis']
     ground_station_params = config.get('ground_station')        #used .get() here so if "ground_station does not exist program won't crash as it will return none if it does not get anything
 
+    if init_conds['method'] == 'orbital_elements':
+        print("Initializing state vectors from orbital elements...")
+        initial_position, initial_velocity = orbital_elements_to_state_vectors(
+            altitude_km=init_conds['altitude_km'],
+            inclination_deg=init_conds['inclination_deg']
+        )
+        print(f"  -> Calculated Initial Position (km): {np.round(initial_position, 2)}")
+        print(f"  -> Calculated Initial Velocity (km/s): {np.round(initial_velocity, 2)}")
+    elif init_conds['method'] == 'state_vectors':
+        print("Initializing state vectors directly from config.")
+        initial_position = np.array(init_conds['position_km'])
+        initial_velocity = np.array(init_conds['velocity_km_s'])
+    else:
+        # Raise an error if the method is not recognized
+        raise ValueError(f"Invalid initial condition method specified in config: '{init_conds['method']}'")
+
     # Setting up initial values from config.json file
-    initial_position = np.array(init_conds['position_km'])
-    initial_velocity = np.array(init_conds['velocity_km_s'])
     initial_quaternion = np.array(init_conds['quaternion'])
     initial_angular_velocity = np.array(init_conds['angular_velocity_rad_s'])
 
@@ -44,13 +60,7 @@ def run_simulation(config_path='config.json'):
     position_list = []
     quaternion_list = []
 
-    for t in range(steps):
-
-        if t % (steps // 10) == 0:
-            # Progress Bar
-            print(f"  Simulation is {int(t / steps * 100)}% complete...")
-
-
+    for t in tqdm(range(steps), desc="Simulating Orbit"):
         satellite.update(t, dt)
         position_list.append(satellite.position.copy())
         quaternion_list.append(satellite.quaternion.copy())
