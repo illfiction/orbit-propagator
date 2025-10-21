@@ -1,10 +1,10 @@
 {
   "simulation": {
-    "time_span_days": 1,
+    "time_span_days": 5,
     "dt_seconds": 1
   },
   "initial_conditions": {
-    "method": "orbital_elements",
+    "method": "state_vectors",
 
     "orbital_elements": "these",
     "altitude_km": 450.0,
@@ -15,7 +15,7 @@
     "velocity_km_s": [0, 3.824, 6.629],
 
     "quaternion": [0.58, 0.58, 0, 0.5720139858],
-    "angular_velocity_rad_s": [0.3, 1.5, 1]
+    "angular_velocity_rad_s": [ 0.0376, -0.1251,  0.1163]
   },
   "satellite_properties": {
     "inertia_tensor": [

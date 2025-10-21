@@ -1,5 +1,5 @@
 import numpy as np
-from constants import J2, EARTH_RADIUS, EARTH_MU
+from orbit_propagator.constants import J2, EARTH_RADIUS, EARTH_MU
 
 def j2_accel(r_vec):
     x, y, z = r_vec

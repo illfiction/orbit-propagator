@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
-from constants import EARTH_RADIUS
+from orbit_propagator.constants import EARTH_RADIUS
 
 def plot_orbit(states, quaternion_list):
     orbit_trace = go.Scatter3d(

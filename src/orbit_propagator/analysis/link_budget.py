@@ -1,10 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from constants import *
-import os, sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-from maths import attitude_matrix_from_quaternion,angle_between_vectors
+from orbit_propagator.constants import *
+from orbit_propagator.utils.maths import attitude_matrix_from_quaternion,angle_between_vectors
 
 # ----------------------------
 # Rotation about z-axis (Active Transformation Matrix)

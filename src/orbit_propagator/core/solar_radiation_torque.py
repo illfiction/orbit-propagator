@@ -1,11 +1,6 @@
 import numpy as np
-from constants import EARTH_RADIUS, SOLAR_PRESSURE
-import sys, os
-
-# go up one directory and into math_helpers
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-
-from maths import *
+from orbit_propagator.constants import EARTH_RADIUS, SOLAR_PRESSURE
+from orbit_propagator.utils.maths import *
 
 
 def solar_radiation_torque(sat):

@@ -1,5 +1,5 @@
 import numpy as np
-from ode_solvers import position_rk4_step, attitude_rk4_step
+from orbit_propagator.core.ode_solvers import position_rk4_step, attitude_rk4_step
 
 class Satellite:
     def __init__(self, position, velocity, quaternion, angular_velocity, properties):

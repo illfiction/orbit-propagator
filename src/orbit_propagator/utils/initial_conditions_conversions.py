@@ -1,5 +1,5 @@
 import numpy as np
-from constants import *
+from orbit_propagator.constants import *
 
 def orbital_elements_to_state_vectors(altitude_km : float, inclination_deg : float):
 

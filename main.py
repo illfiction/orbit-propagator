@@ -1,12 +1,16 @@
 import numpy as np
 from tqdm import tqdm
 import json
+import sys
 import os
-from initial_conditions_conversions import orbital_elements_to_state_vectors
-from satellite import Satellite
-from visualize import plot_orbit
-from link_budget import time_over_ground_station
-from groundstation import GroundStation
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
+from orbit_propagator.utils.initial_conditions_conversions import orbital_elements_to_state_vectors
+from orbit_propagator.core.satellite import Satellite
+from orbit_propagator.visualization.visualize import plot_orbit
+from orbit_propagator.analysis.link_budget import time_over_ground_station
+from orbit_propagator.analysis.groundstation import GroundStation
 
 def run_simulation(config_path='config.json'):
     # Loading configs from config.json file
