@@ -1,3 +1,4 @@
+from tkinter.messagebox import RETRY
 import numpy as np
 import matplotlib.pyplot as plt
 from constants import *
@@ -6,8 +7,16 @@ import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
 from maths import attitude_matrix_from_quaternion
 
+
+
+def angle_between_vectors(v1, v2):
+    v1_u = v1 / np.linalg.norm(v1)
+    v2_u = v2 / np.linalg.norm(v2)
+    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
+
+
 # ----------------------------
-# Rotation about z-axis
+# Rotation about z-axis (Active Transformation Matrix)
 # ----------------------------
 def rot_z(theta):
     c, s = np.cos(theta), np.sin(theta)
@@ -27,60 +36,89 @@ def geodetic_to_ecef(lat, lon, h=0.0):
 # ----------------------------
 # Local "up" vector in ECEF
 # ----------------------------
-def geodetic_up(lat, lon):
+def normal_vector_ecef(lat, lon):
     x = np.cos(lat) * np.cos(lon)
     y = np.cos(lat) * np.sin(lon)
     z = np.sin(lat)
     return np.array([x, y, z])
 
 # ----------------------------
-# Elevation angle calculation
+# Elevation angle calculation (sanity check done!)
 # ----------------------------
-def elevation_angle(r_sat, r_gs, up_eci):
+def elevation_angle_deg(r_sat, r_gs, up_eci):
+
+    # for the spherical approximation of Earth, up_eci points in the direction of the ground station position vector!
+    # for the ellipsoidal Earth model, they would be different!
     rho = r_sat - r_gs
     rho_norm = np.linalg.norm(rho)
     up_norm = np.linalg.norm(up_eci)
     cos_angle = np.dot(rho, up_eci) / (rho_norm * up_norm)
     return 90 - np.degrees(np.arccos(cos_angle))
 
+
+def ecef_to_eci(coordinate_vector_in_ecef, t, phi = 0):
+
+    # the angle phi is an optional parameter to account for an initial rotation offset!
+    # phi depends on the time of the launch of the satellite!
+
+    # passive transformation matrix from ECEF to ECI frame!
+    R_ecef_to_eci = rot_z( -1 * OMEGA_EARTH * t + phi)
+
+    coordinate_vector_in_eci = R_ecef_to_eci @ coordinate_vector_in_ecef
+    return coordinate_vector_in_eci
+
+# def is_pointing_valid(pointing_error_deg, elevation_angle_deg, ground_station, analysis_params):
+#     """
+#     Returns True if the satellite's pointing error and elevation angle 
+#     are within the defined operational limits.
+#     """
+
+#     if (pointing_error_deg <= analysis_params['pointing_angle_threshold_deg']) and (elevation_angle_deg <= ground_station.min_elevation_deg):
+#         {
+
+#         }
+
+
 # ----------------------------
 # Main function: compute downlink time per day
 # ----------------------------
-
-def angle_between_vectors(v1, v2):
-    v1_u = v1 / np.linalg.norm(v1)
-    v2_u = v2 / np.linalg.norm(v2)
-    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
-
-
-
 def time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
 
+    
+
+
+    # this is the vector along which the sattelite's antennas point!
     pointing_axis_body = np.array(analysis_params['pointing_axis_body_frame'])
+
+    # i don't understand what this is right now!
     pointing_threshold_deg = analysis_params['pointing_angle_threshold_deg']
 
     in_pass = False
     pass_start = None
     pass_durations = {}
 
+    # minimum elevation allowed for the satellite's data transmission for the ground station!
     elevation_threshold_deg = ground_station.min_elevation_deg
 
     pointing_angles = []
     pointing_times = []
+    pointing_intervals = []
     total_on_target_time = 0
 
+
     for i, r_sat_eci in enumerate(position_list):
+        
+        # current time in seconds
         t = i * dt
 
-        current_lon = ground_station.lon_rad_initial + OMEGA_EARTH * t
+        # compute ground station position in ECI, normal vector at the ground station position at time t!
         r_gs_ecef = geodetic_to_ecef(ground_station.lat_rad, ground_station.lon_rad_initial, ground_station.alt_km)
-        up_ecef = geodetic_up(ground_station.lat_rad, ground_station.lon_rad_initial)
+        up_ecef = normal_vector_ecef(ground_station.lat_rad, ground_station.lon_rad_initial)
+        r_gs_eci = ecef_to_eci(r_gs_ecef, t)
+        up_eci = ecef_to_eci(up_ecef, t)
 
-        R_ecef_to_eci = rot_z(OMEGA_EARTH * t)
-        r_gs_eci = R_ecef_to_eci @ r_gs_ecef
-        up_eci = R_ecef_to_eci @ up_ecef
-
-        elev = elevation_angle(r_sat_eci, r_gs_eci, up_eci)
+        # compute elevation angle...
+        elev = elevation_angle_deg(r_sat_eci, r_gs_eci, up_eci)
 
         if elev >= elevation_threshold_deg and not in_pass:
             # start of a new pass
@@ -104,14 +142,16 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             los_vector_eci = r_gs_eci - r_sat_eci
 
             angle = angle_between_vectors(pointing_vector_eci, los_vector_eci)
-            pointing_angles.append(angle)
-            pointing_times.append(t/3600)
+            # pointing_angles.append(angle)
+            # pointing_times.append(t/3600)
 
             # check if satellite is pointing to the ground station
             if angle <= pointing_threshold_deg:
                 total_on_target_time += dt
+                pointing_times.append(t)
 
     # --- Reporting and Plotting ---
+
     if not pass_durations:
         print(f"No passes found over {ground_station.name} with elevation >= {elevation_threshold_deg}°.")
     else:
@@ -120,6 +160,25 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
         print(f"Average pass duration per day: {avg_downlink_time:.2f} seconds")
         print(
             f"Total time on-target (pointing error <= {pointing_threshold_deg}°): {total_on_target_time:.2f} seconds")
+
+        interval = 0
+        for j in range(1,len(pointing_times)):
+            if pointing_times[j] - pointing_times[j-1] > dt:
+                pointing_intervals.append(interval)
+                interval = 0
+            else:
+                interval += dt
+
+
+        file_path = "output.txt"
+        with open(file_path, 'w') as f:
+            print("This message will be written to the file.", file=f)
+            print("Another line for the file.", file=f)
+            print(pointing_times, file=f)
+            print("here are the interval lengths...", file=f)
+            print(pointing_intervals, file=f)
+        
+        print("Average interval length pointing: " + str(np.mean(pointing_intervals)))
 
         # Plot pass durations
         days = sorted(pass_durations.keys())
@@ -145,6 +204,8 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
         plt.grid(True)
         plt.show()
 
+
+
 # ----------------------------
 # Example usage
 # ----------------------------
@@ -161,4 +222,4 @@ if __name__ == "__main__":
         theta = 2*np.pi * (t / 5400.0)  # ~90 min period
         position_list[i] = [r_mag*np.cos(theta), r_mag*np.sin(theta), 0]
 
-    downlink_time_per_day(position_list, dt)
+    time_over_ground_station(position_list, dt)
