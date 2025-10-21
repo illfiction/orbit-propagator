@@ -4,7 +4,7 @@ from constants import *
 import os, sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-from maths import attitude_matrix_from_quaternion
+from maths import attitude_matrix_from_quaternion,angle_between_vectors
 
 # ----------------------------
 # Rotation about z-axis
@@ -46,13 +46,6 @@ def elevation_angle(r_sat, r_gs, up_eci):
 # ----------------------------
 # Main function: compute downlink time per day
 # ----------------------------
-
-def angle_between_vectors(v1, v2):
-    v1_u = v1 / np.linalg.norm(v1)
-    v2_u = v2 / np.linalg.norm(v2)
-    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
-
-
 
 def time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
 

@@ -51,3 +51,15 @@ def Omega(w: np.ndarray) -> np.ndarray:
         [ wy, -wz,    0,   wx],
         [ wz,  wy,  -wx,    0]
     ])
+
+def angle_between_vectors(v1: np.ndarray, v2:np.ndarray) -> float:
+    """
+    Computes the angle between two vectors.
+
+    :param v1: a 3 dimensional vector
+    :param v2: a 3 dimensional vector
+    :return: angle in radians
+    """
+    v1_u = v1 / np.linalg.norm(v1)
+    v2_u = v2 / np.linalg.norm(v2)
+    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))

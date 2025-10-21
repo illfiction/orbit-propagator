@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import json
 import os
-from intial_conditions_conversions import orbital_elements_to_state_vectors
+from initial_conditions_conversions import orbital_elements_to_state_vectors
 from satellite import Satellite
 from visualize import plot_orbit
 from link_budget import time_over_ground_station
@@ -73,7 +73,7 @@ def run_simulation(config_path='config.json'):
 
     if analysis_params['run_ground_station_analysis']:
         if ground_station_params:
-            ground_station = GroundStation(ground_station_params['name'], ground_station_params['latitude_deg'], ground_station_params['longitude_deg'], ground_station_params['altitude_km'], ground_station_params['min_elevation_deg'])
+            ground_station = GroundStation.from_config(ground_station_params)
             print(f"Running ground station analysis for: {ground_station.name}")
             time_over_ground_station(position_list=positions, quaternion_list=quaternions, dt=dt, ground_station=ground_station, analysis_params=analysis_params)
         else:
