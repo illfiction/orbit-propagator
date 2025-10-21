@@ -96,11 +96,12 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
     in_pass = False
     pass_start = None
     pass_durations = {}
+    pass_times = []
 
     # minimum elevation allowed for the satellite's data transmission for the ground station!
     elevation_threshold_deg = ground_station.min_elevation_deg
 
-    pointing_angles = []
+    pointing_error_angles = []
     pointing_times = []
     pointing_intervals = []
     total_on_target_time = 0
@@ -124,6 +125,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             # start of a new pass
             in_pass = True
             pass_start = t
+
         elif elev < elevation_threshold_deg and in_pass:
             # end of pass
             in_pass = False
@@ -132,7 +134,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             pass_durations[day] = pass_durations.get(day, 0) + duration
 
         if in_pass:
-
+            # if in 
             q_sat = quaternion_list[i]
             attitude_matrix_body_to_eci = attitude_matrix_from_quaternion(q_sat)
 
@@ -141,12 +143,12 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             # line of sight vector
             los_vector_eci = r_gs_eci - r_sat_eci
 
-            angle = angle_between_vectors(pointing_vector_eci, los_vector_eci)
-            # pointing_angles.append(angle)
-            # pointing_times.append(t/3600)
+            current_error_angle = angle_between_vectors(pointing_vector_eci, los_vector_eci)
+            pointing_error_angles.append(current_error_angle)
+            pass_times.append(t/3600)
 
             # check if satellite is pointing to the ground station
-            if angle <= pointing_threshold_deg:
+            if current_error_angle <= pointing_threshold_deg:
                 total_on_target_time += dt
                 pointing_times.append(t)
 
@@ -158,8 +160,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
         avg_downlink_time = np.mean(list(pass_durations.values()))
         print(f"\n--- Ground Station Pass Analysis for {ground_station.name} ---")
         print(f"Average pass duration per day: {avg_downlink_time:.2f} seconds")
-        print(
-            f"Total time on-target (pointing error <= {pointing_threshold_deg}°): {total_on_target_time:.2f} seconds")
+        print(f"Total time on-target (pointing error <= {pointing_threshold_deg}°): {total_on_target_time:.2f} seconds")
 
         interval = 0
         for j in range(1,len(pointing_times)):
@@ -170,12 +171,11 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
                 interval += dt
 
 
-        file_path = "output.txt"
+        file_path = "pointing_data.txt"
         with open(file_path, 'w') as f:
-            print("This message will be written to the file.", file=f)
-            print("Another line for the file.", file=f)
+            print("These are the pointing times (time stamps where downlinking is possible!):", file=f)
             print(pointing_times, file=f)
-            print("here are the interval lengths...", file=f)
+            print("Here are the interval lengths based on the pointing times:", file=f)
             print(pointing_intervals, file=f)
         
         print("Average interval length pointing: " + str(np.mean(pointing_intervals)))
@@ -194,7 +194,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
     # Plot pointing angle over time
     if pointing_times:
         plt.figure(figsize=(12, 6))
-        plt.plot(pointing_times, pointing_angles, label='Pointing Error Angle')
+        plt.plot(pass_times, pointing_error_angles, label='Pointing Error Angle over Tim')
         plt.axhline(y=pointing_threshold_deg, color='r', linestyle='--',
                     label=f'On-Target Threshold ({pointing_threshold_deg}°)')
         plt.xlabel("Time (hours)")
