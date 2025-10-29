@@ -1,18 +1,6 @@
-from tkinter.messagebox import RETRY
 import numpy as np
-import matplotlib.pyplot as plt
-from constants import *
-import os, sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-from maths import attitude_matrix_from_quaternion
-
-
-
-def angle_between_vectors(v1, v2):
-    v1_u = v1 / np.linalg.norm(v1)
-    v2_u = v2 / np.linalg.norm(v2)
-    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
+from orbit_propagator.constants import *
+from orbit_propagator.utils.maths import attitude_matrix_from_quaternion,angle_between_vectors
 
 
 # ----------------------------
@@ -71,7 +59,7 @@ def ecef_to_eci(coordinate_vector_in_ecef, t, phi = 0):
 # ----------------------------
 # Main function: compute downlink time per day and avg downlink time in without discontinuities!
 # ----------------------------
-def time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
+def monte_carlo_time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
 
     
     # this is the vector along which the sattelite's antennas point!
