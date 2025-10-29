@@ -1,9 +1,13 @@
 import numpy as np
 import json
-import os # Import the 'os' module
-from satellite import Satellite
-from carlo_gs_analysis import time_over_ground_station
-from groundstation import GroundStation
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
+from orbit_propagator.core.satellite import Satellite
+from orbit_propagator.monte_carlo.carlo_gs_analysis import monte_carlo_time_over_ground_station
+from orbit_propagator.analysis.groundstation import GroundStation
 
 
 
