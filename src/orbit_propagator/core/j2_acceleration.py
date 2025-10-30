@@ -1,5 +1,5 @@
 import numpy as np
-from constants import J2, EARTH_RADIUS, EARTH_MU
+from orbit_propagator.constants import J2, EARTH_RADIUS, EARTH_MU
 
 def j2_accel(r_vec):
     x, y, z = r_vec
@@ -12,6 +12,8 @@ def j2_accel(r_vec):
     r5 = r2**2 * r
     k = 1.5 * J2 * EARTH_MU * (EARTH_RADIUS ** 2) / r5
     f = 5.0 * z2 / r2
+
+    # implementing j2 formula
 
     ax = k * x * (f - 1.0)
     ay = k * y * (f - 1.0)

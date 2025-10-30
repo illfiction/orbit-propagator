@@ -1,19 +1,7 @@
-from tkinter.messagebox import RETRY
 import numpy as np
 import matplotlib.pyplot as plt
-from constants import *
-import os, sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-from maths import attitude_matrix_from_quaternion
-
-
-
-def angle_between_vectors(v1, v2):
-    v1_u = v1 / np.linalg.norm(v1)
-    v2_u = v2 / np.linalg.norm(v2)
-    return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
-
+from orbit_propagator.constants import *
+from orbit_propagator.utils.maths import attitude_matrix_from_quaternion,angle_between_vectors
 
 # ----------------------------
 # Rotation about z-axis (Active Transformation Matrix)
@@ -69,7 +57,7 @@ def ecef_to_eci(coordinate_vector_in_ecef, t, phi = 0):
 
 # def is_pointing_valid(pointing_error_deg, elevation_angle_deg, ground_station, analysis_params):
 #     """
-#     Returns True if the satellite's pointing error and elevation angle 
+#     Returns True if the satellite's pointing error and elevation angle
 #     are within the defined operational limits.
 #     """
 
@@ -84,7 +72,7 @@ def ecef_to_eci(coordinate_vector_in_ecef, t, phi = 0):
 # ----------------------------
 def time_over_ground_station(position_list, quaternion_list, dt, ground_station, analysis_params):
 
-    
+
 
 
     # this is the vector along which the sattelite's antennas point!
@@ -108,7 +96,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
 
 
     for i, r_sat_eci in enumerate(position_list):
-        
+
         # current time in seconds
         t = i * dt
 
@@ -134,7 +122,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             pass_durations[day] = pass_durations.get(day, 0) + duration
 
         if in_pass:
-            # if in 
+            # if in
             q_sat = quaternion_list[i]
             attitude_matrix_body_to_eci = attitude_matrix_from_quaternion(q_sat)
 
@@ -177,7 +165,7 @@ def time_over_ground_station(position_list, quaternion_list, dt, ground_station,
             print(pointing_times, file=f)
             print("Here are the interval lengths based on the pointing times:", file=f)
             print(pointing_intervals, file=f)
-        
+
         print("Average interval length pointing: " + str(np.mean(pointing_intervals)))
 
         # Plot pass durations

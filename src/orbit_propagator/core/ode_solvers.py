@@ -1,14 +1,9 @@
 import numpy as np
-from j2_acceleration import j2_accel
-from solar_radiation_force import solar_radiation_force
-from solar_radiation_torque import solar_radiation_torque
-from constants import EARTH_MU
-import sys, os
-
-# go up one directory and into math_helpers
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "math_helpers")))
-
-from maths import Omega # now maths.py is available
+from orbit_propagator.core.j2_acceleration import j2_accel
+from orbit_propagator.core.solar_radiation_force import solar_radiation_force
+from orbit_propagator.core.solar_radiation_torque import solar_radiation_torque
+from orbit_propagator.constants import EARTH_MU
+from orbit_propagator.utils.maths import Omega
 
 
 def position_ode(t, state ,sat):

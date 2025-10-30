@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
-from constants import EARTH_RADIUS
+from orbit_propagator.constants import EARTH_RADIUS
 
 def plot_orbit(states, quaternion_list):
     orbit_trace = go.Scatter3d(
@@ -38,7 +38,7 @@ def plot_orbit(states, quaternion_list):
 
     L = 500
     colors = ['red', 'green', 'blue']
-    step_interval = states.size // 1000
+    step_interval = states.size // 5000
 
     for i in range(0, len(states), step_interval):
         pos = states[i]
