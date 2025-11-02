@@ -63,3 +63,43 @@ def angle_between_vectors(v1: np.ndarray, v2:np.ndarray) -> float:
     v1_u = v1 / np.linalg.norm(v1)
     v2_u = v2 / np.linalg.norm(v2)
     return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
+
+def rot_z(theta: float) -> np.ndarray:
+    """
+    Computes the rotation matrix of a rotation about the z axis.
+
+    :param theta: angle in radians
+    :return: a 3x3 matrix that represents the rotation matrix
+    """
+    c, s = np.cos(theta), np.sin(theta)
+    return np.array([[c, -s, 0],
+                     [s,  c, 0],
+                     [0,  0, 1]])
+
+def rot_x(theta: float) -> np.ndarray:
+    """
+    Computes the rotation matrix of a rotation about the x axis.
+
+    :param theta: angle in radians
+    :return: a 3x3 matrix that represents the rotation matrix
+    """
+
+    c, s = np.cos(theta), np.sin(theta)
+
+    return np.array([[1, 0, 0],
+                     [0, c, -s],
+                     [0, s, c]])
+
+def rot_y(theta: float) -> np.ndarray:
+    """
+    Computes the rotation matrix of a rotation about the y axis.
+
+    :param theta: angle in radians
+    :return: a 3x3 matrix that represents the rotation matrix
+    """
+
+    c, s = np.cos(theta), np.sin(theta)
+
+    return np.array([[c, 0, s],
+                     [0, 1, 0],
+                     [-s, 0, c]])

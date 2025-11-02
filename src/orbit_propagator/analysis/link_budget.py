@@ -1,25 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from orbit_propagator.constants import *
-from orbit_propagator.utils.maths import attitude_matrix_from_quaternion,angle_between_vectors
+from orbit_propagator.utils.maths import attitude_matrix_from_quaternion,angle_between_vectors,rot_z
+from orbit_propagator.utils.earth_frame_conversions import ecef_to_eci,geodetic_to_ecef
 
-# ----------------------------
-# Rotation about z-axis (Active Transformation Matrix)
-# ----------------------------
-def rot_z(theta):
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([[c, -s, 0],
-                     [s,  c, 0],
-                     [0,  0, 1]])
-
-# ----------------------------
-# Convert geodetic lat, lon, h to ECEF (spherical Earth approx.)
-# ----------------------------
-def geodetic_to_ecef(lat, lon, h=0.0):
-    x = (R_EARTH + h) * np.cos(lat) * np.cos(lon)
-    y = (R_EARTH + h) * np.cos(lat) * np.sin(lon)
-    z = (R_EARTH + h) * np.sin(lat)
-    return np.array([x, y, z])
 
 # ----------------------------
 # Local "up" vector in ECEF
@@ -43,17 +27,6 @@ def elevation_angle_deg(r_sat, r_gs, up_eci):
     cos_angle = np.dot(rho, up_eci) / (rho_norm * up_norm)
     return 90 - np.degrees(np.arccos(cos_angle))
 
-
-def ecef_to_eci(coordinate_vector_in_ecef, t, phi = 0):
-
-    # the angle phi is an optional parameter to account for an initial rotation offset!
-    # phi depends on the time of the launch of the satellite!
-
-    # passive transformation matrix from ECEF to ECI frame!
-    R_ecef_to_eci = rot_z( -1 * OMEGA_EARTH * t + phi)
-
-    coordinate_vector_in_eci = R_ecef_to_eci @ coordinate_vector_in_ecef
-    return coordinate_vector_in_eci
 
 # def is_pointing_valid(pointing_error_deg, elevation_angle_deg, ground_station, analysis_params):
 #     """
