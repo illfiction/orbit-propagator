@@ -25,19 +25,11 @@ def run_simulation(config_path='config.json'):
 
     orbit_propagator = OrbitPropagator(config)
 
-    positions, quaternions = orbit_propagator.simulate()
+    orbit_propagator.simulate()
 
-    if analysis_params['run_ground_station_analysis']:
-        if ground_station_params:
-            ground_station = GroundStation.from_config(ground_station_params)
-            print(f"Running ground station analysis for: {ground_station.name}")
-            time_over_ground_station(position_list=positions, quaternion_list=quaternions, dt=dt, ground_station=ground_station, analysis_params=analysis_params)
-        else:
-            print("Warning: Ground station analysis is enabled, but no ground station data found in config.json.")
+    orbit_propagator.analyze()
 
-
-    print("\nGenerating 3D orbit visualization...")
-    plot_orbit(positions, quaternion_list)
+    orbit_propagator.visualize()
 
 
 

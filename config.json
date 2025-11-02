@@ -1,6 +1,6 @@
 {
   "simulation": {
-    "time_span_days": 5,
+    "time_span_days": 1,
     "dt_seconds": 1
   },
   "initial_conditions": {
