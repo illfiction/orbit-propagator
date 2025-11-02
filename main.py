@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-from orbit_propagator.Orbit_Propagator import OrbitPropagator
+from orbit_propagator.OrbitPropagator import OrbitPropagator
 from orbit_propagator.utils.initial_conditions_conversions import orbital_elements_to_state_vectors
 from orbit_propagator.core.satellite import Satellite
 from orbit_propagator.visualization.visualize import plot_orbit

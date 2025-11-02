@@ -29,6 +29,11 @@ class OrbitPropagator:
 
 
     def simulate(self):
+        """
+        Simulate the propagation of the orbit
+
+        :return: void
+        """
 
         for t in tqdm(range(self.steps), desc="Simulating Orbit"):
             self.satellite.update(t, self.dt)
@@ -42,6 +47,12 @@ class OrbitPropagator:
         self.quaternions = np.array(self.quaternion_list)
 
     def analyze(self):
+        """
+        Analyze the propagation of the orbit
+
+        :return: void
+        """
+
         if self.analysis_params['run_ground_station_analysis']:
             if self.ground_station_params:
                 ground_station = GroundStation.from_config(self.ground_station_params)
@@ -52,6 +63,11 @@ class OrbitPropagator:
                 print("Warning: Ground station analysis is enabled, but no ground station data found in config.json.")
 
     def visualize(self):
+        """
+        Visualize the propagation of the orbit
+
+        :return: void
+        """
 
         print("\nGenerating 3D orbit visualization...")
         plot_orbit(self.positions, self.quaternion_list)
