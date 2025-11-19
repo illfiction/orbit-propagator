@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Quaternion:
     def __init__(self, w=1.0, x=0.0, y=0.0, z=0.0):
         self.w = w
@@ -33,7 +34,7 @@ class Quaternion:
 
     # Inverse
     def inverse(self):
-        n2 = self.norm()**2
+        n2 = self.norm() ** 2
         return self.conjugate() * (1.0 / n2)
 
     # Scalar multiplication
@@ -43,14 +44,16 @@ class Quaternion:
             w1, x1, y1, z1 = self.as_array()
             w2, x2, y2, z2 = other.as_array()
             return Quaternion(
-                w1*w2 - x1*x2 - y1*y2 - z1*z2,
-                w1*x2 + x1*w2 + y1*z2 - z1*y2,
-                w1*y2 - x1*z2 + y1*w2 + z1*x2,
-                w1*z2 + x1*y2 - y1*x2 + z1*w2
+                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+                w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+                w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
             )
         else:
             # Scalar multiply
-            return Quaternion(self.w*other, self.x*other, self.y*other, self.z*other)
+            return Quaternion(
+                self.w * other, self.x * other, self.y * other, self.z * other
+            )
 
     # Rotate vector
     def rotate_vector(self, v):

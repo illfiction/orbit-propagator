@@ -15,7 +15,7 @@
     "velocity_km_s": [0, 3.824, 6.629],
 
     "quaternion": [0.58, 0.58, 0, 0.5720139858],
-    "angular_velocity_rad_s": [ 0.0376, -0.1251,  0.1163]
+    "angular_velocity_rad_s": [0.0376, -0.1251, 0.1163]
   },
   "satellite_properties": {
     "inertia_tensor": [
@@ -24,7 +24,12 @@
       [0, 0, 0.025]
     ],
     "dimensions_m": [0.1, 0.1, 0.1],
-    "srp_coefficient": 1.8
+    "mass_kg": 10.0,
+    "drag_coefficient": 2.2,
+    "srp_optical": {
+      "specular": 0.5,
+      "diffuse": 0.2
+    }
   },
   "ground_station": {
     "name": "BITS Pilani, India",
@@ -38,5 +43,11 @@
     "run_ground_station_analysis": false,
     "pointing_axis_body_frame": [0.0, 0.0, 1.0],
     "pointing_angle_threshold_deg": 45.0
+  },
+  "power_analysis": {
+    "panel_area_m2": 0.015,
+    "panel_efficiency": 0.28,
+    "system_losses": 0.08,
+    "panel_normal_body_frame": [0.0, 0.0, 1.0]
   }
 }
