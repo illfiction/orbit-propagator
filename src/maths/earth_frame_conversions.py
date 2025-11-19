@@ -1,9 +1,12 @@
 import numpy as np
 
-from orbit_propagator.constants import OMEGA_EARTH,R_EARTH
-from orbit_propagator.utils.maths import rot_z
+from constants import OMEGA_EARTH, R_EARTH
+from maths.maths import rot_z
 
-def ecef_to_eci(coordinate_vector_in_ecef: np.ndarray, t: float, phi: float = 0) -> np.ndarray :
+
+def ecef_to_eci(
+    coordinate_vector_in_ecef: np.ndarray, t: float, phi: float = 0
+) -> np.ndarray:
     """
     Transforms ECEF(Earth Centered Earth Fixed) coordinate system to ECI(Earth-Centered Inertial) coordinate system.
 
@@ -14,13 +17,13 @@ def ecef_to_eci(coordinate_vector_in_ecef: np.ndarray, t: float, phi: float = 0)
     """
 
     # passive transformation matrix from ECEF to ECI frame!
-    R_ecef_to_eci = rot_z( -1 * OMEGA_EARTH * t + phi)
+    R_ecef_to_eci = rot_z(-1 * OMEGA_EARTH * t + phi)
 
     coordinate_vector_in_eci = R_ecef_to_eci @ coordinate_vector_in_ecef
     return coordinate_vector_in_eci
 
 
-def geodetic_to_ecef(lat: float, lon: float, h: float=0.0) -> np.ndarray :
+def geodetic_to_ecef(lat: float, lon: float, h: float = 0.0) -> np.ndarray:
     """
     Transforms Geodetic coordinate system to ECEF(Earth-Centered Earth-Fixed) coordinate system.
 

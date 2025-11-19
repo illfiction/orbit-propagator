@@ -1,4 +1,5 @@
-numpy
 matplotlib
+numpy
 plotly
+pytest
 tqdm
