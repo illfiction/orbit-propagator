@@ -1,4 +1,7 @@
 import numpy as np
+from datetime import datetime
+from astropy.time import Time
+import astropy.units as u
 from dynamics.ode_solvers import position_rk4_step, attitude_rk4_step
 from maths.initial_conditions_conversions import (
     orbital_elements_to_state_vectors,
@@ -24,6 +27,7 @@ class Satellite:
             print("Initializing state vectors directly from config.")
             initial_position = np.array(initial_conditions["position_km"])
             initial_velocity = np.array(initial_conditions["velocity_km_s"])
+            start_time = Time(datetime.fromisoformat(initial_conditions["start_time"]))
         else:
             raise ValueError(
                 f"Invalid initial condition method specified in config: '{initial_conditions['method']}'"
@@ -41,6 +45,7 @@ class Satellite:
             (initial_quaternion, initial_angular_velocity)
         )  # 7D
         self.state = np.concatenate((self.translational, self.rotational))
+        self.time = start_time
 
         # Set properties
         self.J = np.array(properties["inertia_tensor"])
@@ -62,6 +67,7 @@ class Satellite:
         self.translational = position_rk4_step(t, self, dt)
         self.rotational = attitude_rk4_step(t, self, dt)
         self.state = np.concatenate((self.translational, self.rotational))
+        self.time += dt * u.s
 
     @property
     def position(self):

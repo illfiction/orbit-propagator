@@ -15,7 +15,8 @@
     "velocity_km_s": [0, 3.824, 6.629],
 
     "quaternion": [0.58, 0.58, 0, 0.5720139858],
-    "angular_velocity_rad_s": [0.0376, -0.1251, 0.1163]
+    "angular_velocity_rad_s": [0.0376, -0.1251, 0.1163],
+    "start_time": "2025-01-01T00:00:00+00:00"
   },
   "satellite_properties": {
     "inertia_tensor": [
