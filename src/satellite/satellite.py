@@ -27,7 +27,7 @@ class Satellite:
             print("Initializing state vectors directly from config.")
             initial_position = np.array(initial_conditions["position_km"])
             initial_velocity = np.array(initial_conditions["velocity_km_s"])
-            start_time = Time(datetime.fromisoformat(initial_conditions["start_time"]))
+            self.start_time = Time(datetime.fromisoformat(initial_conditions["start_time"]))
         else:
             raise ValueError(
                 f"Invalid initial condition method specified in config: '{initial_conditions['method']}'"
@@ -45,7 +45,7 @@ class Satellite:
             (initial_quaternion, initial_angular_velocity)
         )  # 7D
         self.state = np.concatenate((self.translational, self.rotational))
-        self.time = start_time
+        self.time = self.start_time
 
         # Set properties
         self.J = np.array(properties["inertia_tensor"])

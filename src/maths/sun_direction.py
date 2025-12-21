@@ -1,10 +1,12 @@
 from astropy.time import Time
 import astropy.units as u
+# from satellite.satellite import Satellite
+import numpy as np
+from constants import JULIAN_DATE_J2000
 
 
 def sun_direction_unit(t: float, sat) -> np.ndarray:
-    julian_date = JULIAN_DATE_J2000 + t / 86_400.0
-    T = (julian_date - JULIAN_DATE_J2000) / 36_525.0
+    T = (sat.time.tt.jd - JULIAN_DATE_J2000) / 36_525.0
 
     phi = np.deg2rad(280.460 + 36_000.771 * T)
     M = np.deg2rad(357.5277233 + 35_999.05034 * T)

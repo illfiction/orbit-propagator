@@ -3,7 +3,7 @@ import numpy as np
 from constants import EARTH_MU
 from dynamics.atmospheric_drag import drag_acceleration
 from dynamics.j2_acceleration import j2_accel
-from dynamics.solar_radiation_force import solar_radiation_force
+from dynamics.solar_radiation_acceleration import solar_radiation_accel
 from maths.maths import Omega
 
 
@@ -11,7 +11,7 @@ def position_ode(t, state, sat):
     r = state[:3]
     a_kepler = -EARTH_MU * r / np.linalg.norm(r) ** 3
     a_j2 = j2_accel(r)
-    a_solar_radiation = solar_radiation_force(t, r, sat)
+    a_solar_radiation = solar_radiation_accel(t, r, sat)
     a_drag = drag_acceleration(r, state[3:6], sat)
 
     a = a_kepler + a_j2 + a_solar_radiation + a_drag
