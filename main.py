@@ -24,7 +24,7 @@ def _simulate_orbit(satellite, time_span_seconds, dt):
     quaternions = []
 
     print(
-        f"Running simulation for {time_span_seconds / 86400:.2f} days with a timestep of {dt}s..."
+        f"Running simulation for {time_span_seconds / 86400:.2f} days with a timestep of {dt}s from {satellite.start_time}     ..."
     )
 
     for step, current_time in enumerate(tqdm(range(steps), desc="Simulating Orbit")):
@@ -52,6 +52,7 @@ def run_simulation(config_path="config.json"):
     sim_params = config["simulation"]
     satellite = Satellite(config["initial_conditions"], config["satellite_properties"])
 
+    start_time = config["initial_conditions"]["start_time"]
     time_span_seconds = sim_params["time_span_days"] * 24 * 60 * 60
     dt = sim_params["dt_seconds"]
 
@@ -77,7 +78,7 @@ def run_simulation(config_path="config.json"):
             )
 
     print("\nGenerating 3D orbit visualization...")
-    plot_orbit(positions, quaternions)
+    plot_orbit(positions, quaternions, start_time)
 
 
 if __name__ == "__main__":
