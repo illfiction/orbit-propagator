@@ -71,6 +71,11 @@ class Satellite:
 
     @property
     def position(self):
+        """
+        position wrt earth eci frame
+
+        :return: position
+        """
         return self.state[:3]
 
     @property

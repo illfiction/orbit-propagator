@@ -6,6 +6,14 @@ from constants import JULIAN_DATE_J2000
 
 
 def sun_direction_unit(t: float, sat) -> np.ndarray:
+    """
+    Return the earth --> sun unit vector (Good enough for LEO)
+    We can assume this as r sun/sat cause r sat/earth is negligible in comparison to r sun/earth in low earth orbit
+
+    :param t: time
+    :param sat: Satellite
+    :return: sun direction unit vector
+    """
     T = (sat.time.tt.jd - JULIAN_DATE_J2000) / 36_525.0
 
     phi = np.deg2rad(280.460 + 36_000.771 * T)
