@@ -4,5 +4,4 @@ plotly
 pytest
 tqdm
 astropy
-spacepy
 ppigrf

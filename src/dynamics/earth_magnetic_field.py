@@ -21,7 +21,7 @@ def earth_magnetic_field(lat, lon, alt_km, time):
     Be, Bn, Bu= ppigrf.igrf(lat, lon, alt_km, time.utc.to_datetime()) ## nanoTesla nT
 
     B_vector_ned = np.array([Bn[0], Be[0], Bu[0]])
-    print(B_vector_ned)
+
 
     R = np.array([
         [-np.sin(lon), -np.cos(lon)*np.sin(lat), np.cos(lon)*np.cos(lat)],
@@ -30,10 +30,8 @@ def earth_magnetic_field(lat, lon, alt_km, time):
         ])
 
     B_vector_ecef = R @ B_vector_ned
-    print(B_vector_ecef)
 
     B_vector_eci = ecef_to_eci(B_vector_ecef,time)
-    print(B_vector_eci)
 
     return B_vector_eci
 

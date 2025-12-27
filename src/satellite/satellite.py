@@ -2,6 +2,7 @@ import numpy as np
 from datetime import datetime
 from astropy.time import Time
 import astropy.units as u
+from maths.quaternion import Quaternion
 from dynamics.ode_solvers import position_rk4_step, attitude_rk4_step
 from maths.initial_conditions_conversions import (
     orbital_elements_to_state_vectors,
@@ -84,7 +85,17 @@ class Satellite:
 
     @property
     def quaternion(self):
+        """
+        quaternion np.array
+        """
         return self.state[6:10]
+
+    @property
+    def Quaternion(self):
+        """
+        Quaternion class
+        """
+        return Quaternion(self.quaternion[0], self.quaternion[1], self.quaternion[2], self.quaternion[3])
 
     @property
     def angular_velocity(self):
