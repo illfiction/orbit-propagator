@@ -5,6 +5,7 @@ from astropy.coordinates import SkyCoord
 import astropy.units as u
 # from satellite.satellite import Satellite
 from maths.earth_frame_conversions import *
+from maths.quaternion import Quaternion
 
 def earth_magnetic_field(lat, lon, alt_km, time):
     """
@@ -34,18 +35,3 @@ def earth_magnetic_field(lat, lon, alt_km, time):
     B_vector_eci = ecef_to_eci(B_vector_ecef,time)
 
     return B_vector_eci
-
-def earth_magnetic_field_from_sat(sat):
-    """
-    Return the earth magnetic field at a given satellite position
-    Magnetic field is in ECI Frame and nT
-
-    :param sat: Satellite
-    :return: Earth magnetic field in ECI Frame in nT
-    """
-
-    lat,lon,alt_m = eci_to_geodetic(sat.position , sat.time)
-
-    alt_km = alt_m / 1000.0
-
-    return earth_magnetic_field(lat, lon, alt_km, sat.time)

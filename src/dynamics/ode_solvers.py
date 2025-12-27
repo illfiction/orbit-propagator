@@ -4,6 +4,7 @@ from constants import EARTH_MU
 from dynamics.atmospheric_drag import drag_acceleration
 from dynamics.j2_acceleration import j2_accel
 from dynamics.solar_radiation_acceleration import solar_radiation_accel
+from dynamics.magnetorquers import magnetorquer_torque
 from maths.maths import Omega
 
 
@@ -18,11 +19,11 @@ def position_ode(t, state, sat):
     return np.concatenate((state[3:6], a))
 
 
-def attitude_ode(t, state, sat):
+def attitude_ode(t, state, sat, dt):
     q = state[:4]
     w = state[4:]
     q_dot = 0.5 * Omega(w).dot(q)
-    Torque = np.zeros(3)
+    Torque = magnetorquer_torque(sat, dt)
     w_dot = sat.J_inv.dot(Torque - np.cross(w, np.dot(sat.J, w)))
     return np.concatenate([q_dot, w_dot])
 
@@ -41,7 +42,7 @@ def position_rk4_step(t, sat, dt):
 
 
 def attitude_rk4_step(t, sat, dt):
-    f = lambda t_, y_: attitude_ode(t_, y_, sat)
+    f = lambda t_, y_: attitude_ode(t_, y_, sat ,dt)
     y_next = rk4_step(f, t, sat.rotational, dt)
     y_next[:4] /= np.linalg.norm(y_next[:4])
     return y_next

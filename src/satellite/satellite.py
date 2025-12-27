@@ -64,6 +64,9 @@ class Satellite:
         x, y, z = self.dimensions
         self.face_areas = np.array([y * z, x * z, x * y])
 
+        self.time_list = []
+        self.magnetic_field_history = [[0,0,0]]
+
     def update(self, t, dt):
         self.translational = position_rk4_step(t, self, dt)
         self.rotational = attitude_rk4_step(t, self, dt)
