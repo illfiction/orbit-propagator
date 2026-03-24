@@ -6,7 +6,7 @@ from maths.quaternion import Quaternion
 def magnetorquer_torque(satellite, dt: float):
     Torque = np.zeros(3)
 
-    if np.linalg.norm(satellite.angular_velocity) > 0.05:
+    if np.linalg.norm(satellite.angular_velocity) > 0.09:
         # print("sat position ", satellite.position)
         lat, lon, alt_m = eci_to_geodetic(satellite.position, satellite.time)
 
@@ -16,24 +16,19 @@ def magnetorquer_torque(satellite, dt: float):
 
         B_body_frame = satellite.Quaternion.rotate_vector(B_eci)
 
-        B_dot = (B_body_frame - satellite.magnetic_field_history[-1]) / dt
+        m_max = 0.0000000000001
 
+        B_dot = (B_body_frame - satellite.magnetic_field_history[-1]) / dt
         B_dot_norm = np.linalg.norm(B_dot)
 
-        m_max = 0.00001
-
-        m = -m_max * (B_dot / B_dot_norm)
-
         if B_dot_norm < 1e-12 or dt == 0.0:
-            return np.zeros(3)  # No field change → no torque
+            satellite.magnetic_field_history.append(B_body_frame)  # still update history
+            return np.zeros(3)
 
+        m = -m_max * (B_dot / B_dot_norm)  # safe now
         Torque = np.cross(m, B_body_frame)
-
-        print(Torque)
-
-        # Torque = np.zeros(3)
 
         satellite.time_list.append(satellite.time)
         satellite.magnetic_field_history.append(B_body_frame)
 
-    return Torque
+        return Torque

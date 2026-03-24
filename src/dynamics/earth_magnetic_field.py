@@ -18,13 +18,13 @@ def earth_magnetic_field(lat, lon, alt_km, time):
 
     r_m = (R_EARTH + alt_km) * 1000.0
 
-    coef = (10 ** (2) * MAGNETIC_MOMENT_EARTH) / (r_m ** 3)
+    coef = (10 ** (-7) * MAGNETIC_MOMENT_EARTH) / (r_m ** 3)
 
-    Bn_nT = coef * np.cos(lat)
-    Bu_nT = -2 * coef * np.sin(lat)
-    Be_nT = 0.0
+    Bn = coef * np.cos(lat)
+    Bu = -2 * coef * np.sin(lat)
+    Be = 0.0
 
-    B_vector_enu = np.array([Be_nT, Bn_nT, Bu_nT])
+    B_vector_enu = np.array([Be, Bn, Bu])
 
     #
     # print("B_vector_ned = ", B_vector_enu)
