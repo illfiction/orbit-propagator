@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from constants import *
+from tqdm import tqdm
 from maths.maths import (
     attitude_matrix_from_quaternion,
     angle_between_vectors,
@@ -71,7 +72,7 @@ def time_over_ground_station(
     pointing_intervals = []
     total_on_target_time = 0
 
-    for i, r_sat_eci in enumerate(position_list):
+    for i, r_sat_eci in enumerate(tqdm(position_list)):
 
         # current time in seconds
         t = i * dt

@@ -28,12 +28,12 @@ class Satellite:
             print("Initializing state vectors directly from config.")
             initial_position = np.array(initial_conditions["position_km"])
             initial_velocity = np.array(initial_conditions["velocity_km_s"])
-            self.start_time = Time(datetime.fromisoformat(initial_conditions["start_time"]))
         else:
             raise ValueError(
                 f"Invalid initial condition method specified in config: '{initial_conditions['method']}'"
             )
 
+        self.start_time = Time(datetime.fromisoformat(initial_conditions["start_time"]))
         # Initialize attitude
         initial_quaternion = np.array(initial_conditions["quaternion"])
         initial_angular_velocity = np.array(

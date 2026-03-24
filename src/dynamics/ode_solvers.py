@@ -24,6 +24,7 @@ def attitude_ode(t, state, sat, dt):
     w = state[4:]
     q_dot = 0.5 * Omega(w).dot(q)
     Torque = magnetorquer_torque(sat, dt)
+    # Torque = np.zeros(3)
     w_dot = sat.J_inv.dot(Torque - np.cross(w, np.dot(sat.J, w)))
     return np.concatenate([q_dot, w_dot])
 

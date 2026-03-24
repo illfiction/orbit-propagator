@@ -80,15 +80,19 @@ def geodetic_to_ecef(lat: float, lon: float, h: float = 0.0) -> np.ndarray:
     return np.array([x, y, z])
 
 def ecef_to_geodetic(coordinate_vector_in_ecef: np.ndarray) -> tuple[float, float, float]:
+
+    print("coordinate vector in ecef",coordinate_vector_in_ecef)
     x, y, z = map(float, coordinate_vector_in_ecef)
 
-
+    print("x y z", x, y, z)
     lon = np.arctan2(y, x)
 
     r: float = float(np.linalg.norm([x, y, z]))
     lat = np.arcsin(np.clip(z / r, -1.0, 1.0))
 
     h = r - R_EARTH
+
+    print("lat lon r",lat, lon, r)
 
     return lat, lon, h
 
