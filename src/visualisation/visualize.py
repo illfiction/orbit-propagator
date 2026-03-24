@@ -50,7 +50,7 @@ def plot_orbit(states, quaternion_list,start_time):
 
     L = 500
     colors = ["red", "green", "blue"]
-    step_interval = states.size // 500    #<--- increase this value for less points plotted
+    step_interval = states.size // 300    #<--- increase this value for more points plotted
 
     for i in range(0, len(states), step_interval):
         pos = states[i]

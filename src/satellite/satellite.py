@@ -72,6 +72,7 @@ class Satellite:
         self.rotational = attitude_rk4_step(t, self, dt)
         self.state = np.concatenate((self.translational, self.rotational))
         self.time += dt * u.s
+        print(np.linalg.norm(self.angular_velocity))
 
     @property
     def position(self):

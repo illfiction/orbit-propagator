@@ -26,10 +26,10 @@ def earth_magnetic_field(lat, lon, alt_km, time):
 
     B_vector_enu = np.array([Be_nT, Bn_nT, Bu_nT])
 
-
-    print("B_vector_ned = ", B_vector_enu)
-
-    print(f"DEBUG - lat: {lat}, alt_km: {alt_km}, M: {MAGNETIC_MOMENT_EARTH}, R: {R_EARTH}")
+    #
+    # print("B_vector_ned = ", B_vector_enu)
+    #
+    # print(f"DEBUG - lat: {lat}, alt_km: {alt_km}, M: {MAGNETIC_MOMENT_EARTH}, R: {R_EARTH}")
 
     R = np.array([
         [-np.sin(lon), -np.cos(lon)*np.sin(lat), np.cos(lon)*np.cos(lat)],
