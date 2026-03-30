@@ -19,11 +19,10 @@ def position_ode(t, state, sat):
     return np.concatenate((state[3:6], a))
 
 
-def attitude_ode(t, state, sat, dt):
+def attitude_ode(t, state, sat, dt ,Torque):
     q = state[:4]
     w = state[4:]
     q_dot = 0.5 * Omega(w).dot(q)
-    Torque = magnetorquer_torque(sat, dt)
     # Torque = np.zeros(3)
     w_dot = sat.J_inv.dot(Torque - np.cross(w, np.dot(sat.J, w)))
     return np.concatenate([q_dot, w_dot])
@@ -43,7 +42,8 @@ def position_rk4_step(t, sat, dt):
 
 
 def attitude_rk4_step(t, sat, dt):
-    f = lambda t_, y_: attitude_ode(t_, y_, sat ,dt)
+    Torque = magnetorquer_torque(sat, dt)
+    f = lambda t_, y_: attitude_ode(t_, y_, sat ,dt, Torque)
     y_next = rk4_step(f, t, sat.rotational, dt)
     y_next[:4] /= np.linalg.norm(y_next[:4])
     return y_next
