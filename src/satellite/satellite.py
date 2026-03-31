@@ -84,7 +84,7 @@ class Satellite:
         self.state = np.concatenate((self.translational, self.rotational))
         self.time += dt * u.s
 
-        print(np.linalg.norm(self.angular_velocity))
+        # print(np.linalg.norm(self.angular_velocity))
 
     @property
     def position(self):

@@ -63,6 +63,9 @@ def run_simulation(config_path="config.json"):
     analysis_params = config.get("analysis", {})
     ground_station_params = config.get("ground_station")
 
+    # Saves the entire array as comma-separated values
+    np.savetxt('omega_output.csv', omega, delimiter=',')
+
     print(omega[0])
     print(np.linalg.norm(omega[0]))
     print(omega[-1])
