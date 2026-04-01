@@ -76,8 +76,9 @@ class Satellite:
 
         B_eci = earth_magnetic_field(lat, lon, alt_km, self.time)
         B_body = self.Quaternion.rotate_vector(B_eci)
-        self.magnetic_field_history.append(B_body)
-        self.time_list.append(self.time)
+        if not np.allclose(B_body, self.magnetic_field_history[-1], atol=1e-10):
+            self.magnetic_field_history = np.vstack((self.magnetic_field_history, B_body))
+            self.time_list.append(self.time)
 
         self.translational = position_rk4_step(t, self, dt)
         self.rotational = attitude_rk4_step(t, self, dt)

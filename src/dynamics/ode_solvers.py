@@ -43,6 +43,10 @@ def position_rk4_step(t, sat, dt):
 
 def attitude_rk4_step(t, sat, dt):
     Torque = magnetorquer_torque(sat, dt)
+    # print(Torque)
+    cos_angle = np.dot(Torque, sat.angular_velocity) / (np.linalg.norm(Torque) * np.linalg.norm(sat.angular_velocity))
+    error = np.degrees(np.arcsin(np.clip(cos_angle, -1.0, 1.0)))
+    # print('error', error)
     f = lambda t_, y_: attitude_ode(t_, y_, sat ,dt, Torque)
     y_next = rk4_step(f, t, sat.rotational, dt)
     y_next[:4] /= np.linalg.norm(y_next[:4])

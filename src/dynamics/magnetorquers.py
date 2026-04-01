@@ -11,14 +11,16 @@ def magnetorquer_torque(satellite, dt: float):
 
         alt_km = alt_m / 1000.0
 
-        B_eci = earth_magnetic_field(lat, lon, alt_km, satellite.time)
+        # B_eci = earth_magnetic_field(lat, lon, alt_km, satellite.time)
+        #
+        #
+        # B_body_frame = satellite.Quaternion.rotate_vector(B_eci)
 
-
-        B_body_frame = satellite.Quaternion.rotate_vector(B_eci)
+        B_body_frame = satellite.magnetic_field_history[-1]
 
         m_max = 0.00078  #A-m^2 Calculated from experimental values
 
-        B_dot = (B_body_frame - satellite.magnetic_field_history[-1]) / dt
+        B_dot = (satellite.magnetic_field_history[-1] - satellite.magnetic_field_history[-2]) / dt
 
         # print(satellite.magnetic_field_history[-1])
         # print(B_body_frame)
@@ -29,7 +31,7 @@ def magnetorquer_torque(satellite, dt: float):
         if B_dot_norm < 1e-25 or dt == 0.0:
 
 
-            # print("Bdot negligible")
+            print("Bdot negligible")
             return np.zeros(3)
 
         m = -m_max * (B_dot / B_dot_norm)
