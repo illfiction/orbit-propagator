@@ -88,7 +88,7 @@ def run_simulation(config_path="config.json"):
             )
 
     print("\nGenerating 3D orbit visualization...")
-    plot_orbit(positions, quaternions, start_time)
+    # plot_orbit(positions, quaternions, start_time)
 
 
 if __name__ == "__main__":

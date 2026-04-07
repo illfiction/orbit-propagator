@@ -68,6 +68,7 @@ class Satellite:
 
         self.time_list = []
         self.magnetic_field_history = [[0,0,0],[0,0,0]]
+        self.prev_Torque = np.zeros(3)
 
     def update(self, t, dt):
 
@@ -75,10 +76,9 @@ class Satellite:
         alt_km = alt_m / 1000.0
 
         B_eci = earth_magnetic_field(lat, lon, alt_km, self.time)
-        B_body = self.Quaternion.rotate_vector(B_eci)
-        if not np.allclose(B_body, self.magnetic_field_history[-1], atol=1e-10):
-            self.magnetic_field_history = np.vstack((self.magnetic_field_history, B_body))
-            self.time_list.append(self.time)
+        B_body = self.QuaternionConj.rotate_vector(B_eci)
+        self.magnetic_field_history = np.vstack((self.magnetic_field_history, B_body))
+        self.time_list.append(self.time)
 
         self.translational = position_rk4_step(t, self, dt)
         self.rotational = attitude_rk4_step(t, self, dt)
@@ -113,6 +113,11 @@ class Satellite:
         Quaternion class
         """
         return Quaternion(self.quaternion[0], self.quaternion[1], self.quaternion[2], self.quaternion[3])
+
+    @property
+    def QuaternionConj(self):
+
+        return Quaternion(self.quaternion[0], self.quaternion[1], self.quaternion[2], self.quaternion[3]).conjugate()
 
     @property
     def angular_velocity(self):

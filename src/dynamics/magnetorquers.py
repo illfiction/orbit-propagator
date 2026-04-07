@@ -5,7 +5,7 @@ from maths.quaternion import Quaternion
 
 def magnetorquer_torque(satellite, dt: float):
 
-    if np.linalg.norm(satellite.angular_velocity) > 0.09:
+    if np.linalg.norm(satellite.angular_velocity) > 0.09 or True:
         # print("sat position ", satellite.position)
         lat, lon, alt_m = eci_to_geodetic(satellite.position, satellite.time)
 
@@ -28,7 +28,7 @@ def magnetorquer_torque(satellite, dt: float):
         # print(B_dot)
 
 
-        if B_dot_norm < 1e-25 or dt == 0.0:
+        if B_dot_norm < 1e-10 or dt == 0.0:
 
 
             print("Bdot negligible")
@@ -36,7 +36,8 @@ def magnetorquer_torque(satellite, dt: float):
 
         m = -m_max * (B_dot / B_dot_norm)
 
-        Torque = -np.cross(m, B_body_frame)
+        Torque = np.cross(m, B_body_frame)
+        satellite.prev_Torque = Torque
 
         satellite.time_list.append(satellite.time)
         # print("w",satellite.angular_velocity)
@@ -44,7 +45,10 @@ def magnetorquer_torque(satellite, dt: float):
         # print("angular velocity",np.linalg.norm(satellite.angular_velocity))
         # print("quaternion",satellite.quaternion)
 
+
+
         return Torque
 
     print("Nothing")
+    satellite.prev_Torque = np.zeros(3)
     return np.zeros(3)

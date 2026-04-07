@@ -1,7 +1,7 @@
 {
   "simulation": {
     "time_span_days": 10,
-    "dt_seconds": 4
+    "dt_seconds": 0.1
   },
   "initial_conditions": {
     "method": "orbital_elements",
