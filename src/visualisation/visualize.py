@@ -4,7 +4,8 @@ import plotly.io as pio
 from constants import EARTH_RADIUS
 
 
-def plot_orbit(states, quaternion_list):
+
+def plot_orbit(states, quaternion_list,start_time):
     orbit_trace = go.Scatter3d(
         x=states[:, 0],
         y=states[:, 1],
@@ -34,10 +35,22 @@ def plot_orbit(states, quaternion_list):
         ),
         title="Interactive Orbit Visualization",
     )
+    fig.add_annotation(
+        text=f"Start Time: {start_time}",
+        xref="paper",
+        yref="paper",
+        x=0.01,
+        y=0.99,
+        showarrow=False,
+        font=dict(size=14, color="white"),
+        bgcolor="rgba(0,0,0,0.6)",
+        bordercolor="white",
+        borderwidth=1,
+    )
 
     L = 500
     colors = ["red", "green", "blue"]
-    step_interval = states.size // 5000
+    step_interval = states.size // 300    #<--- increase this value for more points plotted
 
     for i in range(0, len(states), step_interval):
         pos = states[i]

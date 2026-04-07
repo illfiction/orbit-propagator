@@ -22,9 +22,10 @@ def _simulate_orbit(satellite, time_span_seconds, dt):
     steps = int(time_span_seconds / dt)
     positions = []
     quaternions = []
+    angular_velocities = []
 
     print(
-        f"Running simulation for {time_span_seconds / 86400:.2f} days with a timestep of {dt}s..."
+        f"Running simulation for {time_span_seconds / 86400:.2f} days with a timestep of {dt}s from {satellite.start_time}     ..."
     )
 
     for step, current_time in enumerate(tqdm(range(steps), desc="Simulating Orbit")):
@@ -32,9 +33,10 @@ def _simulate_orbit(satellite, time_span_seconds, dt):
         satellite.update(t_seconds, dt)
         positions.append(satellite.position.copy())
         quaternions.append(satellite.quaternion.copy())
+        angular_velocities.append(satellite.angular_velocity.copy())
 
     print("  Simulation 100% complete.")
-    return np.array(positions), np.array(quaternions)
+    return np.array(positions), np.array(quaternions),np.array(angular_velocities)
 
 
 def run_simulation(config_path="config.json"):
@@ -52,13 +54,22 @@ def run_simulation(config_path="config.json"):
     sim_params = config["simulation"]
     satellite = Satellite(config["initial_conditions"], config["satellite_properties"])
 
+    start_time = config["initial_conditions"]["start_time"]
     time_span_seconds = sim_params["time_span_days"] * 24 * 60 * 60
     dt = sim_params["dt_seconds"]
 
-    positions, quaternions = _simulate_orbit(satellite, time_span_seconds, dt)
+    positions, quaternions, omega = _simulate_orbit(satellite, time_span_seconds, dt)
 
     analysis_params = config.get("analysis", {})
     ground_station_params = config.get("ground_station")
+
+    # Saves the entire array as comma-separated values
+    np.savetxt('omega_output.csv', omega, delimiter=',')
+
+    print(omega[0])
+    print(np.linalg.norm(omega[0]))
+    print(omega[-1])
+    print(np.linalg.norm(omega[-1]))
 
     if analysis_params.get("run_ground_station_analysis"):
         if ground_station_params:
@@ -77,7 +88,7 @@ def run_simulation(config_path="config.json"):
             )
 
     print("\nGenerating 3D orbit visualization...")
-    plot_orbit(positions, quaternions)
+    # plot_orbit(positions, quaternions, start_time)
 
 
 if __name__ == "__main__":

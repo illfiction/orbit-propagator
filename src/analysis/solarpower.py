@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict, Tuple, Optional
 
 from constants import ASTRONOMICAL_UNIT_KM, EARTH_RADIUS, SOLAR_FLUX
-from dynamics.solar_radiation_force import sun_direction_unit
+from maths.sun_direction import sun_direction_unit
 from maths.maths import attitude_matrix_from_quaternion
 
 ASTRONOMICAL_UNIT_M = ASTRONOMICAL_UNIT_KM * 1_000.0
@@ -45,7 +45,7 @@ def compute_generated_power(
         panel_normal_body = np.array([0.0, 0.0, 1.0])
     panel_normal_body /= np.linalg.norm(panel_normal_body)
 
-    sun_dir_earth = sun_direction_unit(time_seconds)
+    sun_dir_earth = sun_direction_unit(time_seconds,satellite)
     position_km = np.asarray(satellite.position, dtype=float)
 
     in_eclipse = _is_in_earth_eclipse(position_km, sun_dir_earth)

@@ -1,10 +1,10 @@
 {
   "simulation": {
-    "time_span_days": 1,
-    "dt_seconds": 1
+    "time_span_days": 10,
+    "dt_seconds": 0.1
   },
   "initial_conditions": {
-    "method": "state_vectors",
+    "method": "orbital_elements",
 
     "orbital_elements": "these",
     "altitude_km": 450.0,
@@ -15,11 +15,12 @@
     "velocity_km_s": [0, 3.824, 6.629],
 
     "quaternion": [0.58, 0.58, 0, 0.5720139858],
-    "angular_velocity_rad_s": [0.0376, -0.1251, 0.1163]
+    "angular_velocity_rad_s": [0.3, -0.3, 0.3],
+    "start_time": "2025-01-01T00:00:00+00:00"
   },
   "satellite_properties": {
     "inertia_tensor": [
-      [0.005, 0, 0],
+      [0.025, 0, 0],
       [0, 0.025, 0],
       [0, 0, 0.025]
     ],
@@ -42,7 +43,7 @@
     "run_monte_carlo_sim": false,
     "run_ground_station_analysis": false,
     "pointing_axis_body_frame": [0.0, 0.0, 1.0],
-    "pointing_angle_threshold_deg": 45.0
+    "pointing_angle_threshold_deg": 1000
   },
   "power_analysis": {
     "panel_area_m2": 0.015,
